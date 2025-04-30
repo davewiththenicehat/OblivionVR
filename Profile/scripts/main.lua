@@ -18,7 +18,7 @@ function on_level_change(level)
 	--controllers.createController(2)
 	weaponConnected = true	
 	--flickerFixer.create()
-	hands.destroyHands()
+	--hands.destroyHands()
 	hands.reset()
 	animation.pose("right_hand", "grip_right_weapon")
 	animation.pose("left_hand", "grip_left_weapon")
