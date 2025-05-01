@@ -146,7 +146,7 @@ function UpdateInput(state)
 
 	
 --UnpressButton
-
+	
 	--	unpressButton(state,XINPUT_GAMEPAD_LEFT_SHOULDER)
 	--	unpressButton(state,XINPUT_GAMEPAD_LEFT_THUMB)
 	

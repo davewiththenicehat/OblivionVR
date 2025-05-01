@@ -102,6 +102,11 @@ local zero_color = StructObject.new(color_c)
 local hitresult_c = find_required_object("ScriptStruct /Script/Engine.HitResult")
 local GameplayStaticsDefault= find_required_object("GameplayStatics /Script/Engine.Default__GameplayStatics")
 local VWeaponClass= find_static_class("Class /Script/Altar.VWeapon")
+local VHitBoxClass= find_required_object("Class /Script/Altar.VHitBoxComponent")
+local ftransform_c = find_required_object("ScriptStruct /Script/CoreUObject.Transform")
+
+
+
 local reusable_hit_result1 = StructObject.new(hitresult_c)
 local reusable_hit_result2=  StructObject.new(hitresult_c)
 local reusable_hit_result3 = StructObject.new(hitresult_c)
@@ -128,12 +133,42 @@ local BoxYLast=0
 local BoxY=0
 local tgm=false
 local AttackDelta=0
+local ActorFound=false
+local HitBoxReset=true
+local HitBoxDelta=0
+local SendAttack=false
+local Init=false
+local InitDelta=0
+
+local function UpdatePlayerCollision(delta)
+	if pawn.CapsuleComponent~=nil and Init==false then
+	InitDelta=InitDelta+delta
+	
+	end
+	if Init==false and InitDelta>20 then
+		pawn.CapsuleComponent.CapsuleHalfHeight= 200.0
+		Init=true
+		print("init")
+	end
+	
+		if not isRiding and Init==true then
+			if ThumbLX~=0 or ThumbLY ~= 0 then
+				--pawn.CapsuleComponent.CapsuleHalfHeight= CapsuleHalfHeightWhenMoving
+				--pawn.CapsuleComponent.CapsuleRadius= CapsuleRadWhenMoving
+			else pawn.CapsuleComponent.CapsuleRadius=11.480
+				
+				--pawn.CharacterMovement:SetWalkableFloorAngle(90)
+			end
+		end
+end
+
 uevr.sdk.callbacks.on_pre_engine_tick(
 function(engine, delta)
 --print(isRiding)
 if not isRidng then
 	DeltaCheck=DeltaCheck+delta
 	--print(DeltaCheck)
+	player= api:get_player_controller(0)
 	pawn = api:get_local_pawn(0)
 	--print(isRiding)
 	--local rHandIndex = uevr.params.vr.get_right_controller_index()
@@ -184,9 +219,8 @@ if not isRidng then
 	--swinging_fast = vel_len >= 2.5
 	--end
 --
-	if not isRiding then
-	pawn.CapsuleComponent.CapsuleRadius=10
-	end
+	UpdatePlayerCollision(delta)
+	
 	local _class ={VWeaponClass}
 	--print(pawn.WeaponsPairingComponent.WeaponActor:GetOverlappingComponents())
 	local _actors = {}
@@ -202,11 +236,11 @@ if not isRidng then
 			isAttacking=true
 		end
 		if isAttacking  then
-			BoxX=40
-			BoxZ=40
+			--BoxX=
+			--BoxZ=40
 		--	print("yes")
-			pawn.WeaponsPairingComponent.WeaponActor.VHitBox.RelativeLocation.X=-40
-			AttackCount=AttackCount+delta
+			--pawn.WeaponsPairingComponent.WeaponActor.VHitBox.RelativeLocation.X=-40
+			--AttackCount=AttackCount+delta
 		else	
 			pawn.WeaponsPairingComponent.WeaponActor.VHitBox.RelativeLocation.X=10+ExtraBlockRange
 			BoxX=10+ExtraBlockRange
@@ -233,21 +267,37 @@ if not isRidng then
 		--pawn.WeaponsPairingComponent.WeaponActor.VHitBox.BoxExtent.Z=15
 		--pawn.WeaponsPairingComponent.WeaponActor.VHitBox.BoxExtent.Y=50
 		pawn.WeaponsPairingComponent.WeaponActor.VHitBox:GetOverlappingComponents(_actors)
-	--	pawn.WeaponsPairingComponent.ShieldActor:GetOverlappingComponents(_ShieldComp)
+		--pawn.WeaponsPairingComponent.ShieldActor:GetOverlappingComponents(_ShieldComp)
 	end
   end
-
+	
 	--print(_actors)
 	--pawn.WeaponsPairingComponent.WeaponActor.VHitBox:SetRenderInMainPass(true)
+	ActorFound=false
+	SendAttack=true
 	for i, comp in ipairs(_actors) do
 		
 	
 			if not string.find(comp:GetOwner():get_fname():to_string(),"Player") then
-				-- print(comp:GetOwner():get_fname():to_string())
+				 --print(comp:GetOwner():get_fname():to_string())
 				if comp:GetOwner():GetOwner()~=nil then
 					if not string.find(comp:GetOwner():GetOwner():get_fname():to_string(),"Player") then	
-						
-						--print(comp:GetOwner():get_fname():to_string())
+						if comp:GetOwner().bIsEquipped ==nil then
+							ActorFound=true
+							SendAttack=false
+							if  HitBoxReset and PosDiff>MeleePower*1.7 then
+								HitBoxReset=false
+								SendAttack=false								
+								pawn:SendMeleeHitOnPairedPawn(comp:GetOwner(),true,2)
+								player:SendToConsole("player.modav Fatigue -30")
+							elseif  HitBoxReset and PosDiff>MeleePower then
+								HitBoxReset=false
+								SendAttack=false								
+								pawn:SendMeleeHitOnPairedPawn(comp:GetOwner(),false,2)
+								player:SendToConsole("player.modav Fatigue -5")
+							end
+							print(comp:GetOwner():get_fname():to_string())
+						end
 						if comp:GetOwner().bIsEquipped ~=nil and not string.find(comp:GetOwner():get_fname():to_string(),"Shield") then
 							print(comp:GetOwner().bIsEquipped)--get_fname():to_string())
 							if comp:GetOwner().bIsEquipped  then
@@ -255,43 +305,88 @@ if not isRidng then
 								--if not isAimMethodSwitched then 
 									isBlock=true
 									--pawn:SendAttack(3,5)
+									--pawn:SendAttackStartedEvent()
 									pawn:SendBlockHit()
+									--pawn:SendMeleeHitOnPairedPawn(comp:GetOwner():GetOwner(),false,1)
 									DeltaBlock=0
 									break
 								--end
 							end
 						end
+					
 					end
 			
 				end
 			end	
 	end
-	for i, comp in ipairs(_ShieldComp) do
+	
+
+	
+	
+	--HitBox TImer
+	if HitBoxReset==false then
+	HitBoxDelta=HitBoxDelta+delta
+	end
+	
+	--Reset Hitbox:
+	if ActorFound==false and HitBoxDelta> 0.2 then
+		HitBoxReset=true
+		HitBoxDelta=0
+	end
+	
+	
+	if pawn.WeaponsPairingComponent.ShieldActor~=nil then
 		
-	
-			if not string.find(comp:GetOwner():get_fname():to_string(),"Player") then
-				-- print(comp:GetOwner():get_fname():to_string())
-				if comp:GetOwner():GetOwner()~=nil then
-					if not string.find(comp:GetOwner():GetOwner():get_fname():to_string(),"Player") then	
-						
-					--	print(comp:GetOwner():get_fname():to_string())
-						if comp:GetOwner().bIsEquipped ~=nil then
-							print("Shield")--get_fname():to_string())
-							if comp:GetOwner().bIsEquipped then
-					--print("Blocked")			
-								--if not isAimMethodSwitched then 
-									isBlock=true
-									pawn:SendBlockHit()
-									break
-								--end
-							end
-						end
-					end
+		if pawn.WeaponsPairingComponent.ShieldActor:GetComponentByClass(VHitBoxClass)== nil then
+				
 			
-				end
-			end	
+			--local vec= Vector3f.new(0,0,0)
+			
+			local zero_transform = StructObject.new(ftransform_c)
+			--local scene_capture_component_c = find_required_object("Class /Script/Engine.SceneCaptureComponent2D")
+			zero_transform.Rotation.W = 1.0
+			zero_transform.Scale3D = Vector3f.new(1.0, 1.0, 1.0)
+			pawn.WeaponsPairingComponent.ShieldActor:AddComponentByClass(VHitBoxClass,false,zero_transform, false)
+		end
+		local HitBoxComponent= pawn.WeaponsPairingComponent.ShieldActor:GetComponentByClass(VHitBoxClass)
+		HitBoxComponent.RelativeLocation.X=24.15
+		HitBoxComponent.RelativeLocation.Y= 20.28
+		HitBoxComponent.RelativeLocation.Z=0.66
+		HitBoxComponent.BoxExtent.X=30.82
+		HitBoxComponent.BoxExtent.Y=20.27
+		HitBoxComponent.BoxExtent.Z=37.33
+		--HitBoxComponent,BodyInstance.CollisionEnabled=1
+		--HitBoxComponent,BodyInstance.CollisionResponses.ResponseToChannels
+		HitBoxComponent:GetOverlappingComponents(_ShieldComp)
+		
+		for i, comp in ipairs(_ShieldComp) do
+			
+		
+				if not string.find(comp:GetOwner():get_fname():to_string(),"Player") then
+					-- print(comp:GetOwner():get_fname():to_string())
+					if comp:GetOwner():GetOwner()~=nil then
+						if not string.find(comp:GetOwner():GetOwner():get_fname():to_string(),"Player") then	
+							
+							print(comp:GetOwner():GetOwner():get_fname():to_string())
+						--	if comp:GetOwner().bIsEquipped ~=nil then
+								print("Shield")--get_fname():to_string())
+								--if comp:GetOwner().bIsEquipped then
+						--print("Blocked")			
+									--if not isAimMethodSwitched then 
+										isBlock=true
+										pawn:SendBlockHit()
+										DeltaBlock=0
+										break
+									--end
+								--end
+							--end
+						
+						end
+					--else SendAttack=true					
+					end
+				end	
+		end
 	end
-	
 	--print(" ")
 	--Hitscan
 	local WeaponMesh=nil
@@ -361,12 +456,12 @@ if not isRidng then
 	--		isHit4=true
 	--	else isHit4=false
 	--	end
-		if hit5 and reusable_hit_result5.Distance < 50*MeleeDistance then
+		if hit5 and reusable_hit_result5.Distance < 20*MeleeDistance then
 			isHit5=true
 		else isHit5=false
 		end
 		--if reusable_hit_result2.Actor ~=nil then
-	Hittest = reusable_hit_result2
+	Hittest = reusable_hit_result5
 --print(Hittest[8])
 --print(Hittest[3])
 --print(Hittest[4])
@@ -375,7 +470,7 @@ if not isRidng then
 --	print(reusable_hit_result2.Actor)
 	--print(Hittest.Component)
 --	print(Hittest.Item)
---	print(Hittest.bBlockingHit)
+	--print(Hittest.bBlockingHit)
 -- --print(api:get_item(Hittest.Item))
 --	print(" ")
 	--end
@@ -385,7 +480,7 @@ if not isRidng then
 		--print(isHit2)
 		--print(isHit3)
 		--print(isHit4)
-		--print(isHit5)
+	--	print(isHit5)
 		--print("  ")
 	end
 	if Mouse1==true then
@@ -405,76 +500,87 @@ if not isRidng then
 
 	--DeltaAimMethod=DeltaAimMethod+delta
 if isBow ==false and isRiding==false then
-uevr.params.vr.set_mod_value("VR_AimMethod", "2")
-	--if isHit5  then
-	--DeltaAimMethod=DeltaAimMethod+delta
-	--	if DeltaAimMethod > 0.1 and isAimMethodSwitched==false then
-	--	isAimMethodSwitched=true
-	--	uevr.params.vr.set_mod_value("VR_AimMethod", "0")
-	--	DeltaAimMethod=0
-	--	end
-	--end
-	--if DeltaAimMethod>0.5 or PMesh.AnimScriptInstance.bAttackingRequest or PMesh.AnimScriptInstance.bCanExitAttack then
-	--	uevr.params.vr.set_mod_value("VR_AimMethod", "2")
-	--	isAimMethodSwitched=false
-	--	
-	--end
-	if right_hand_component:K2_GetComponentRotation().z > -105 and right_hand_component:K2_GetComponentRotation().z<-75 and PosDiff<100 then
-		DeltaBlockActivator=DeltaBlockActivator+delta
-		if DeltaBlockActivator > 0.15 and PosDiff<100 then
-			if SwordSidewaysIsBlock then
-				isBlock=true
+	
+	if Abutton and uevr.params.vr:get_mod_value("UI_FollowView", "true") then
+		uevr.params.vr.set_mod_value("VR_AimMethod", "1")
+	else
+		uevr.params.vr.set_mod_value("VR_AimMethod", "2")
+	end
+		if isHit5  then
+		--pawn:SendAttack(0,1)
+		--isHit5=false
+		--DeltaAimMethod=DeltaAimMethod+delta
+		--	if DeltaAimMethod > 0.1 and isAimMethodSwitched==false then
+		--	isAimMethodSwitched=true
+		--	uevr.params.vr.set_mod_value("VR_AimMethod", "0")
+		--	DeltaAimMethod=0
+			end
+		--end
+		--if DeltaAimMethod>0.5 or PMesh.AnimScriptInstance.bAttackingRequest or PMesh.AnimScriptInstance.bCanExitAttack then
+		--	uevr.params.vr.set_mod_value("VR_AimMethod", "2")
+		--	isAimMethodSwitched=false
+		--	
+		--end
+		if right_hand_component:K2_GetComponentRotation().z > -105 and right_hand_component:K2_GetComponentRotation().z<-75 and PosDiff<100 then
+			DeltaBlockActivator=DeltaBlockActivator+delta
+			if DeltaBlockActivator > 0.15 and PosDiff<100 then
+				if SwordSidewaysIsBlock then
+					isBlock=true
+				end
+			end
+		else 
+			DeltaBlockActivator=0
+			
+		end
+		--print (ShieldAngle-HeadAngle)
+		if ShieldAngle-HeadAngle > 60 and ShieldAngle-HeadAngle< 100 and pawn.WeaponsPairingComponent.ShieldActor ~=nil then
+			DeltaBlock2Activator=DeltaBlock2Activator+delta
+			if DeltaBlock2Activator > 0.15   then
+			--isBlock=true
+			end
+		elseif ShieldAngle-HeadAngle <-260 and ShieldAngle-HeadAngle >-295 and pawn.WeaponsPairingComponent.ShieldActor ~=nil then
+			DeltaBlock2Activator=DeltaBlock2Activator+delta
+			if DeltaBlock2Activator > 0.15 then
+		--	isBlock=true
+			end
+		else 
+			DeltaBlock2Activator=0		
+		end
+				
+		
+		if isBlock then
+		--uevr.params.vr.set_mod_value("VR_AimMethod", "1")
+		DeltaBlock=DeltaBlock+delta
+			if DeltaBlock >1.15 then
+				pawn:SendBlock(false)
+			isBlock=false
+			DeltaBlock=0
+			
 			end
 		end
-	else 
-		DeltaBlockActivator=0
-		
-	end
-	--print (ShieldAngle-HeadAngle)
-	if ShieldAngle-HeadAngle > 60 and ShieldAngle-HeadAngle< 100 and pawn.WeaponsPairingComponent.ShieldActor ~=nil then
-		DeltaBlock2Activator=DeltaBlock2Activator+delta
-		if DeltaBlock2Activator > 0.15   then
-		isBlock=true
-		end
-	elseif ShieldAngle-HeadAngle <-260 and ShieldAngle-HeadAngle >-295 and pawn.WeaponsPairingComponent.ShieldActor ~=nil then
-		DeltaBlock2Activator=DeltaBlock2Activator+delta
-		if DeltaBlock2Activator > 0.15 then
-		isBlock=true
-		end
-	else 
-		DeltaBlock2Activator=0		
-	end
-			
+	elseif isBow and RTrigger ~= 0 then uevr.params.vr.set_mod_value("VR_AimMethod", "0")
+	elseif isBow and RTrigger == 0 then uevr.params.vr.set_mod_value("VR_AimMethod", "0")
 	
-	if isBlock then
-	--uevr.params.vr.set_mod_value("VR_AimMethod", "1")
-	DeltaBlock=DeltaBlock+delta
-		if DeltaBlock >1.15 then
-			pawn:SendBlock(false)
-		isBlock=false
-		DeltaBlock=0
-		
-		end
 	end
-elseif isBow and RTrigger ~= 0 then uevr.params.vr.set_mod_value("VR_AimMethod", "0")
-elseif isBow and RTrigger == 0 then uevr.params.vr.set_mod_value("VR_AimMethod", "0")
-
-end
-AttackDelta=AttackDelta+delta
+	AttackDelta=AttackDelta+delta
 else uevr.params.vr.set_mod_value("VR_AimMethod", "0") 
 pawn.CapsuleComponent.CapsuleRadius=50
 end
 end)
 
+
+	
 local Prep=false
 local PrepR=false
 
 uevr.sdk.callbacks.on_xinput_get_state(
 function(retval, user_index, state)
-
-
+if Init==true then
+	pressButton(state,XINPUT_GAMEPAD_B)
+	Init=2
+end
 --print(isBlock)
-if isBlock and PosDiff<MeleePower then
+if isBlock and PosDiff<MeleePower  then
 	--print("trogger")
 	state.Gamepad.bLeftTrigger=255
 end
@@ -500,10 +606,10 @@ end
 --if isHit1 or isHit2 or isHit3 or isHit4 or isHit5 and Mouse1==false then
 
 if isWeaponDrawn and isBow==false then
-	if PosDiff >= MeleePower and Mouse1==false and AttackDelta>0.2 then
+	if PosDiff >= MeleePower and Mouse1==false and AttackDelta>2.2 and  isHit5 and HitBoxReset== true then
 	
 	AttackDelta=0
-	--uevr.params.vr.set_mod_value("VR_AimMethod", "1")
+		--uevr.params.vr.set_mod_value("VR_AimMethod", "1")
 		if state.Gamepad.bRightTrigger==255 then
 			state.Gamepad.bRightTrigger=0
 		elseif state.Gamepad.bRightTrigger==0 then

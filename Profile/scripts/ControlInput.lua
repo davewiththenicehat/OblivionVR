@@ -4,7 +4,7 @@ uevr.sdk.callbacks.on_xinput_get_state(
 function(retval, user_index, state)
 
 
-if Ybutton then
+if Ybutton and lShoulder then
 	unpressButton(state,XINPUT_GAMEPAD_Y)
 	pressButton(state,XINPUT_GAMEPAD_LEFT_SHOULDER)
 end

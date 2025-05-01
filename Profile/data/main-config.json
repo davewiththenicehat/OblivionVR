@@ -1,0 +1,12 @@
+{
+    "Enable_Lumen_Indoors": false,
+    "Extra_Block_Range": 0,
+    "Faster_Projectiles": false,
+    "First_Person_Riding": true,
+    "Holster_Haptic_Feedback": true,
+    "Melee_Power": 501,
+    "Movement": 1,
+    "Snap_Turn": false,
+    "Sword_Sideways_Is_Block": false,
+    "Visible_Helmet": true
+}

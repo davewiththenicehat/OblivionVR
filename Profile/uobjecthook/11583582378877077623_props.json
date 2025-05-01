@@ -19,10 +19,6 @@
     "properties": [
         {
             "data": 1,
-            "name": "WorldStatic"
-        },
-        {
-            "data": 1,
             "name": "PhysicsBody"
         },
         {
@@ -35,11 +31,15 @@
         },
         {
             "data": 1,
+            "name": "Visibility"
+        },
+        {
+            "data": 1,
             "name": "Vehicle"
         },
         {
             "data": 1,
-            "name": "Visibility"
+            "name": "WorldStatic"
         }
     ],
     "type": "properties"

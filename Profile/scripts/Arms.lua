@@ -115,8 +115,10 @@ local function update_weapon_offset(Body_mesh)
 				ShieldMesh=PairingComponent.ShieldActor.MainStaticMeshComponent
 					if isWeaponDrawn and not isBow then
 						ShieldMesh:SetVisibility(true, true)
+						UEVR_UObjectHook.get_or_add_motion_controller_state(ShieldMesh):set_permanent(true)
 						--ShieldMesh:SetRenderInMainPass(true)
 					else ShieldMesh:SetVisibility(false, true)
+						UEVR_UObjectHook.get_or_add_motion_controller_state(ShieldMesh):set_permanent(false)
 						--ShieldMesh:SetRenderInMainPass(false)
 					end
 					if isBow then ShieldMesh:SetVisibility(false, true) end
@@ -124,14 +126,9 @@ local function update_weapon_offset(Body_mesh)
 				UEVR_UObjectHook.get_or_add_motion_controller_state(ShieldMesh):set_hand(0)
 				UEVR_UObjectHook.get_or_add_motion_controller_state(ShieldMesh):set_rotation_offset(Vector3f.new(math.pi,math.pi,0))
 				UEVR_UObjectHook.get_or_add_motion_controller_state(ShieldMesh):set_location_offset(Vector3f.new(2,-6,-30))
+				
 			end
-				if isWeaponDrawn and not isBow then
-						ShieldMesh:SetVisibility(true, true)
-						--ShieldMesh:SetRenderInMainPass(true)
-					else ShieldMesh:SetVisibility(false, true)
-						--ShieldMesh:SetRenderInMainPass(false)
-					end
-					if isBow then ShieldMesh:SetVisibility(false, true) end
+				
 		end
 		--print(isBow)
 			
