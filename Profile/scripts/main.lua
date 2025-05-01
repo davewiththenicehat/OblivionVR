@@ -304,9 +304,12 @@ if isMenu then
 end
 if not isMenu and MenuChanged then
 	MenuChanged=false
-	rightHandComponent:SetVisibility(false)
-	leftHandComponent:SetVisibility(false)
-	
+	if rightHandComponent ~= nil then
+		rightHandComponent:SetVisibility(false)
+	end
+	if leftHandComponent ~= nil then
+		leftHandComponent:SetVisibility(false)
+	end
 	hands.destroyHands()
 	hands.reset()
 end
