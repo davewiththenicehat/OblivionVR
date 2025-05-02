@@ -33,6 +33,14 @@ local ConditionChagned=false
 
 uevr.sdk.callbacks.on_pre_engine_tick(
 function(engine, delta)
+
+if isMenu then
+	uevr.params.vr.set_mod_value("UI_FollowView", "false")
+elseif UIFollowsView and not isMenu then 
+	uevr.params.vr.set_mod_value("UI_FollowView", "true")
+end
+
+
 --print(isRiding
 if not isRiding then
 	uevr.params.vr.set_mod_value("VR_RoomscaleMovement", "true")

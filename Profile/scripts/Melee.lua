@@ -145,10 +145,10 @@ local InitDelta=0
 local function UpdatePlayerCollision(delta)
 	if pawn.CapsuleComponent~=nil and Init==false then
 	InitDelta=InitDelta+delta
-	
+	pawn.CapsuleComponent.CapsuleHalfHeight= 200.0
 	end
 	if Init==false and InitDelta>10 then
-		pawn.CapsuleComponent.CapsuleHalfHeight= 200.0
+		pawn:Crouch(true)
 		Init=true
 		print("init")
 	end

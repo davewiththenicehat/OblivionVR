@@ -9,7 +9,7 @@ local config_filename = "main-config.json"
 local title = "Oblivion Remastered VR Mod Settings"
 local author = "Pande4360"
 local profile_name = "6dof Attached Items Profile (Righthand Aiming)"
-local profile_version = "1.07e: HOTFIX 4"
+--local profile_version = "1.07e: HOTFIX 4"
 
 local required_uevr_commit_count = nil
 local uevr_version = nil
@@ -33,6 +33,7 @@ config_table = {
     First_Person_Riding = true,
     Extra_Block_Range = 5,
     Melee_Power = 360,
+	
 }
 
 json_files = fs.glob(config_filename)
@@ -69,6 +70,7 @@ SwordSidewaysIsBlock = config_table.Sword_Sideways_Is_Block
 ExtraBlockRange = config_table.Extra_Block_Range
 MeleePower = config_table.Melee_Power
 
+
 local function uevr_version_check()
     imgui.text("UEVR Version Check: ")
     imgui.same_line()
@@ -92,8 +94,8 @@ local function create_header()
     imgui.text("By: " .. author)
     imgui.same_line()
     imgui.text("Profile: " .. profile_name)
-    imgui.same_line()
-    imgui.text("Version: " .. profile_version)
+   -- imgui.same_line()
+    --imgui.text("Version: " .. profile_version)
 
     if check_uevr_version then
         uevr_version_check()
@@ -159,6 +161,7 @@ uevr.sdk.callbacks.on_draw_ui(function()
     imgui.new_line()
 
     imgui.text("Features")
+	
     Enable_Lumen_Indoors = create_checkbox("Enable Lumen Indoors", "Enable_Lumen_Indoors")
     Faster_Projectiles = create_checkbox("Faster Projectiles", "Faster_Projectiles")
     VisibleHelmet = create_checkbox("Helmet Visibility", "Visible_Helmet")
