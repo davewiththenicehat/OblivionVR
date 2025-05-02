@@ -501,7 +501,7 @@ if not isRidng then
 	--DeltaAimMethod=DeltaAimMethod+delta
 if isBow ==false and isRiding==false then
 	
-	if Abutton and uevr.params.vr:get_mod_value("UI_FollowView", "true") then
+	if Abutton and string.find(uevr.params.vr:get_mod_value("UI_FollowView"),"true") then
 		uevr.params.vr.set_mod_value("VR_AimMethod", "1")
 	else
 		uevr.params.vr.set_mod_value("VR_AimMethod", "2")
