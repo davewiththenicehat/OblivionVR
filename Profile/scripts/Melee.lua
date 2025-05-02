@@ -9,20 +9,22 @@
 	--local params = uevr.params
 	local callbacks = uevr.params.sdk.callbacks
 	local pawn = api:get_local_pawn(0)
-	local lHand_Pos =UEVR_Vector3f.new()
-	local lHand_Rot =UEVR_Quaternionf.new()
-	local rHand_Pos =UEVR_Vector3f.new()
-	local rHand_Rot =UEVR_Quaternionf.new()
-	local rHand_Joy =UEVR_Vector2f.new()
+	local WeaponHand_Pos=UEVR_Vector3f.new()
+	local WeaponHand_Rot=UEVR_Quaternionf.new()
+	local SecondaryHand_Pos=UEVR_Vector3f.new()
+	local SecondaryHand_Rot=UEVR_Quaternionf.new()
+	local SecondaryHand_Joy=UEVR_Vector2f.new()
 	local PosZOld=0
 	local PosYOld=0
 	local PosXOld=0
-	local PosZOldR=0
-	local PosYOldR=0
-	local PosXOldR=0
+	local PosZOldSecondary=0
+	local PosYOldSecondary=0
+	local PosXOldSecondary=0
 	local tickskip=0
-	local PosDiff = 0
-	local PosDiffR = 0
+	local PosDiffWeaponHand=0
+	local PosDiffSecondaryHand=0
+	local WeaponHandCanPunch=false
+	local SecondaryHandCanPunch=false
 	
 --VR to key functions
 local function SendKeyPress(key_value, key_up)
@@ -171,28 +173,28 @@ if not isRidng then
 	player= api:get_player_controller(0)
 	pawn = api:get_local_pawn(0)
 	--print(isRiding)
-	--local rHandIndex = uevr.params.vr.get_right_controller_index()
-	uevr.params.vr.get_pose(2, lHand_Pos, lHand_Rot)
+	--local SecondaryHandIndex = uevr.params.vr.get_right_controller_index()
+	uevr.params.vr.get_pose(2, WeaponHand_Pos, WeaponHand_Rot)
 	
-	local PosXNew=lHand_Pos.x
-	local PosYNew=lHand_Pos.y
-	local PosZNew=lHand_Pos.z
+	local PosXNew=WeaponHand_Pos.x
+	local PosYNew=WeaponHand_Pos.y
+	local PosZNew=WeaponHand_Pos.z
 	
-	PosDiff = math.sqrt((PosXNew-PosXOld)^2+(PosYNew-PosYOld)^3+(PosZNew-PosZOld)^2)*10000
+	PosDiffWeaponHand = math.sqrt((PosXNew-PosXOld)^2+(PosYNew-PosYOld)^3+(PosZNew-PosZOld)^2)*10000
 	PosZOld=PosZNew
 	PosYOld=PosYNew
 	PosXOld=PosXNew
 	
-	uevr.params.vr.get_pose(1, rHand_Pos, rHand_Rot)
-	local PosXNewR=rHand_Pos.x
-	local PosYNewR=rHand_Pos.y
-	local PosZNewR=rHand_Pos.z
+	uevr.params.vr.get_pose(1, SecondaryHand_Pos, SecondaryHand_Rot)
+	local PosXNewSecondary=SecondaryHand_Pos.x
+	local PosYNewSecondary=SecondaryHand_Pos.y
+	local PosZNewSecondary=SecondaryHand_Pos.z
 	
-	PosDiffR = math.sqrt((PosXNewR-PosXOldR)^2+(PosYNewR-PosYOldR)^3+(PosZNewR-PosZOldR)^2)*10000
-	PosZOldR=PosZNewR
-	PosYOldR=PosYNewR
-	PosXOldR=PosXNewR
-	--print(PosDiff)
+	PosDiffSecondaryHand = math.sqrt((PosXNewSecondary-PosXOldSecondary)^2+(PosYNewSecondary-PosYOldSecondary)^3+(PosZNewSecondary-PosZOldSecondary)^2)*10000
+	PosZOldSecondary=PosZNewSecondary
+	PosYOldSecondary=PosYNewSecondary
+	PosXOldSecondary=PosXNewSecondary
+	--print(PosDiffWeaponHand)
 --Praydog VARIUANT:	use swinging_fast
 	--vr.get_pose(vr.get_right_controller_index(), melee_data.right_hand_pos_raw, melee_data.right_hand_q_raw)
 	--
@@ -285,12 +287,12 @@ if not isRidng then
 						if comp:GetOwner().bIsEquipped ==nil then
 							ActorFound=true
 							SendAttack=false
-							if  HitBoxReset and PosDiff>MeleePower*1.7 then
+							if  HitBoxReset and PosDiffWeaponHand>MeleePower*1.7 then
 								HitBoxReset=false
 								SendAttack=false								
 								pawn:SendMeleeHitOnPairedPawn(comp:GetOwner(),true,2)
 								player:SendToConsole("player.modav Fatigue -30")
-							elseif  HitBoxReset and PosDiff>MeleePower then
+							elseif  HitBoxReset and PosDiffWeaponHand>MeleePower then
 								HitBoxReset=false
 								SendAttack=false								
 								pawn:SendMeleeHitOnPairedPawn(comp:GetOwner(),false,2)
@@ -411,6 +413,15 @@ if not isRidng then
 --	print(hmd_component:K2_GetComponentRotation().y)
 	end
 	--print(left_hand_component:K2_GetComponentRotation.y)
+	--Check if no weapon in hand and no shield, if so, can possibly use secondary hand to punch
+	if WeaponMesh == nil and pawn.WeaponsPairingComponent.ShieldActor == nil then
+		SecondaryHandCanPunch = true
+	else SecondaryHandCanPunch = false
+	end
+	if WeaponMesh == nil then
+		WeaponHandCanPunch = true
+	else WeaponHandCanPunch = false
+	end
 	if WeaponMesh ~=nil then--Weapon condition
 		--local MeleeMesh= right_hand_component:K2_GetComponentLocation()--pawn.CurrentMeleeWeapon.StaticMesh
 		local game_engine = UEVR_UObjectHook.get_first_object_by_class(game_engine_class)
@@ -521,9 +532,9 @@ if isBow ==false and isRiding==false then
 		--	isAimMethodSwitched=false
 		--	
 		--end
-		if right_hand_component:K2_GetComponentRotation().z > -105 and right_hand_component:K2_GetComponentRotation().z<-75 and PosDiff<100 then
+		if right_hand_component:K2_GetComponentRotation().z > -105 and right_hand_component:K2_GetComponentRotation().z<-75 and PosDiffWeaponHand<100 then
 			DeltaBlockActivator=DeltaBlockActivator+delta
-			if DeltaBlockActivator > 0.15 and PosDiff<100 then
+			if DeltaBlockActivator > 0.15 and PosDiffWeaponHand<100 then
 				if SwordSidewaysIsBlock then
 					isBlock=true
 				end
@@ -580,14 +591,14 @@ if Init==true then
 	Init=2
 end
 --print(isBlock)
-if isBlock and PosDiff<MeleePower  then
+if isBlock and PosDiffWeaponHand<MeleePower  then
 	--print("trogger")
 	state.Gamepad.bLeftTrigger=255
 end
 --local TriggerR = state.Gamepad.bRightTrigger
---if PosDiff >= MeleePower and Prep == false then
+--if PosDiffWeaponHand >= MeleePower and Prep == false then
 --	Prep=true
---elseif PosDiff <=150 and Prep ==true then
+--elseif PosDiffWeaponHand <=150 and Prep ==true then
 --	SendKeyDown('0x01')
 --	Prep=false
 --	Mouse1=true
@@ -596,9 +607,9 @@ end
 
 
 
---if PosDiffR >= MeleePower and PrepR == false then
+--if PosDiffSecondaryHand >= MeleePower and PrepR == false then
 --	Prep=true
---elseif PosDiffR <=10 and PrepR ==true then
+--elseif PosDiffSecondaryHand <=10 and PrepR ==true then
 --	state.Gamepad.bRightTrigger= 255
 --	PrepR=false
 --end	
@@ -606,7 +617,7 @@ end
 --if isHit1 or isHit2 or isHit3 or isHit4 or isHit5 and Mouse1==false then
 
 if isWeaponDrawn and isBow==false then
-	if PosDiff >= MeleePower and Mouse1==false and AttackDelta>2.2 and  isHit5 and HitBoxReset== true then
+	if Mouse1==false and AttackDelta>2.2 and ((PosDiffWeaponHand >= MeleePower and isHit5 and HitBoxReset== true) or (SecondaryHandCanPunch and PosDiffSecondaryHand >= MeleePower) or (WeaponHandCanPunch and PosDiffWeaponHand >= MeleePower)) then
 	
 	AttackDelta=0
 		--uevr.params.vr.set_mod_value("VR_AimMethod", "1")
