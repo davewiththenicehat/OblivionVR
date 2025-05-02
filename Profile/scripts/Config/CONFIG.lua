@@ -22,7 +22,7 @@ end
 local json_files = {}
 
 -- Initial config setup
-local config_table = {
+config_table = {
     Movement = 1,
     Snap_Turn = false,
     Enable_Lumen_Indoors = false,
@@ -32,7 +32,7 @@ local config_table = {
     Sword_Sideways_Is_Block = false,
     First_Person_Riding = true,
     Extra_Block_Range = 5,
-    Melee_Power = 800,
+    Melee_Power = 360,
 }
 
 json_files = fs.glob(config_filename)
@@ -161,7 +161,7 @@ uevr.sdk.callbacks.on_draw_ui(function()
     imgui.text("Features")
     Enable_Lumen_Indoors = create_checkbox("Enable Lumen Indoors", "Enable_Lumen_Indoors")
     Faster_Projectiles = create_checkbox("Faster Projectiles", "Faster_Projectiles")
-    --VisibleHelmet = create_checkbox("Helmet Visibility", "Visible_Helmet")
+    VisibleHelmet = create_checkbox("Helmet Visibility", "Visible_Helmet")
     HapticFeedback = create_checkbox("Holster Haptic Feedback", "Holster_Haptic_Feedback")
     FirstPersonRiding = create_checkbox("First Person Horse Riding", "First_Person_Riding")
     SwordSidewaysIsBlock = create_checkbox("Hold Sword Sideways To Block", "Sword_Sideways_Is_Block")

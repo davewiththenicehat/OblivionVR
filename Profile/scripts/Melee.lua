@@ -145,14 +145,14 @@ local function UpdatePlayerCollision(delta)
 	InitDelta=InitDelta+delta
 	
 	end
-	if Init==false and InitDelta>20 then
+	if Init==false and InitDelta>10 then
 		pawn.CapsuleComponent.CapsuleHalfHeight= 200.0
 		Init=true
 		print("init")
 	end
 	
 		if not isRiding and Init==true then
-			if ThumbLX~=0 or ThumbLY ~= 0 then
+			if math.abs(ThumbLX)>=20000 or math.abs(ThumbLY) >= 20000 then
 				--pawn.CapsuleComponent.CapsuleHalfHeight= CapsuleHalfHeightWhenMoving
 				--pawn.CapsuleComponent.CapsuleRadius= CapsuleRadWhenMoving
 			else pawn.CapsuleComponent.CapsuleRadius=11.480

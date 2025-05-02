@@ -1,12 +1,19 @@
 require(".\\Subsystems\\UEHelper")
-
+local api = uevr.api
+local QuickMenu=false
 uevr.sdk.callbacks.on_xinput_get_state(
 function(retval, user_index, state)
 
 
-if Ybutton and lShoulder then
+if Ybutton and lShoulder and QuickMenu==false then
 	unpressButton(state,XINPUT_GAMEPAD_Y)
-	pressButton(state,XINPUT_GAMEPAD_LEFT_SHOULDER)
+	api:get_player_controller():Quick7Input_Pressed()
+	QuickMenu=true
+elseif not Ybutton or not lShoulder then
+	if QuickMenu== true then
+		api:get_player_controller():Quick7Input_Released()
+		QuickMenu=false
+	end
 end
 if isMenu==false then
 	if lThumb then

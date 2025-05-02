@@ -159,14 +159,6 @@ function UpdateInput(state)
 
 end
 
-local function UpdateDriveStatus(pawn)
-	if pawn.AdjustedSteeringInput ~=nil then
-		isDriving=true
-		uevr.params.vr.set_mod_value("VR_AimMethod" , "0")
-	else isDriving=false
-		uevr.params.vr.set_mod_value("VR_AimMethod" , "2")
-	end
-end
 
 local function UpdateMenuStatus(Player)
 	if Player.bShowMouseCursor then

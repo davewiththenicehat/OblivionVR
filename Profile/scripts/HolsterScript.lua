@@ -1,5 +1,5 @@
 require(".\\Trackers\\Trackers")
-require(".\\Config.CONFIG")
+require(".\\Config\\CONFIG")
 require(".\\Subsystems\\UEHelper")
 HolsterInit=true
 if TrackersInit and configInit then
