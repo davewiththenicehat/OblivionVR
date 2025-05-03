@@ -16,6 +16,18 @@ elseif not Ybutton or not lShoulder then
 	end
 end
 if isMenu==false then
+	if Xbutton then
+		unpressButton(state,XINPUT_GAMEPAD_X)
+		pressButton(state,XINPUT_GAMEPAD_RIGHT_SHOULDER)
+	end
+	if rShoulder then
+		unpressButton(state,XINPUT_GAMEPAD_RIGHT_SHOULDER)
+	end
+	if Bbutton then
+		unpressButton(state,XINPUT_GAMEPAD_B)
+		pressButton(state,XINPUT_GAMEPAD_X)
+	end
+
 	if lThumb then
 	unpressButton(state,XINPUT_GAMEPAD_LEFT_THUMB)
 	--pressButton(state,XINPUT_GAMEPAD_LEFT_SHOULDER)

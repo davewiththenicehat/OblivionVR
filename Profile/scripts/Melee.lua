@@ -167,7 +167,7 @@ end
 uevr.sdk.callbacks.on_pre_engine_tick(
 function(engine, delta)
 --print(isRiding)
-if not isRidng then
+if not isRiding then
 	DeltaCheck=DeltaCheck+delta
 	--print(DeltaCheck)
 	player= api:get_player_controller(0)
@@ -511,7 +511,7 @@ if not isRidng then
 
 	--DeltaAimMethod=DeltaAimMethod+delta
 if isBow ==false and isRiding==false then
-	
+	uevr.params.vr.set_mod_value("VR_AimMethod", "2")
 
 		if isHit5  then
 		--pawn:SendAttack(0,1)
@@ -521,7 +521,7 @@ if isBow ==false and isRiding==false then
 		--	isAimMethodSwitched=true
 		--	uevr.params.vr.set_mod_value("VR_AimMethod", "0")
 		--	DeltaAimMethod=0
-			end
+		end
 		--end
 		--if DeltaAimMethod>0.5 or PMesh.AnimScriptInstance.bAttackingRequest or PMesh.AnimScriptInstance.bCanExitAttack then
 		--	uevr.params.vr.set_mod_value("VR_AimMethod", "2")
@@ -570,6 +570,7 @@ if isBow ==false and isRiding==false then
 	
 	end
 	AttackDelta=AttackDelta+delta
+--if riding:
 else uevr.params.vr.set_mod_value("VR_AimMethod", "0") 
 pawn.CapsuleComponent.CapsuleRadius=50
 end

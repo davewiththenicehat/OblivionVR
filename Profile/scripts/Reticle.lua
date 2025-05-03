@@ -366,7 +366,7 @@ local function spawn_reticle_plane(world, owner, pos, tex)
     color.R = 54
     color.G = 69
     color.B = 79
-    color.A = 0.3
+    color.A = 0.45
     dynamic_materialReticle:SetVectorParameterValue("Color", color)
     reticle_plane_component = local_reticle_mesh
 end
@@ -726,7 +726,7 @@ local function UpdateReticleDistance(reticle_plane_component)
 		local hit5 = kismet_system_library:LineTraceSingle(world, Start, End, 0, true, ignore2_actors, 0, reusable_hit_result5, true, zero_color, zero_color, 1.0)
 		local range= 2500--reusable_hit_result5.Distance
 		reticle_plane_component:K2_SetRelativeLocation(temp_vec3:set(range, 0, 10), false, reusable_hit_result, false)
-		reticle_plane_component:SetWorldScale3D(temp_vec3:set(0.01*range/100,0.01*range/100, 0.00001))
+		reticle_plane_component:SetWorldScale3D(temp_vec3:set(0.006*range/100,0.006*range/100, 0.00001))
 	
 	--end)
 end
@@ -812,7 +812,10 @@ uevr.sdk.callbacks.on_pre_engine_tick(
      
  
 		UpdateReticleDistance(reticle_plane_component)
+	if not ReticleAlwaysOn then 
 		switch_scope_state()
+	else reticle_plane_component:SetVisibility(true)
+	end
 	--print(reticle_plane_component)
 	
 

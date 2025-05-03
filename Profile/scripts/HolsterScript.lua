@@ -1,6 +1,7 @@
 require(".\\Trackers\\Trackers")
 require(".\\Config\\CONFIG")
 require(".\\Subsystems\\UEHelper")
+require(".\\libs\\zones")
 HolsterInit=true
 if TrackersInit and configInit then
 	print("Trackers  loaded")
@@ -673,8 +674,8 @@ uevr.sdk.callbacks.on_pre_engine_tick(
 	end
 	
 	--FUNCTION FOR ZONES, dont edit this
-local function RCheckZone(Zmin,Zmax,Ymin,Ymax,Xmin,Xmax) -- Z: UP/DOWN, Y:RIGHT LEFT, X FORWARD BACKWARD, checks if RHand is in RZone
-	if RHandNewZ > Zmin and RHandNewZ < Zmax and RHandNewY > Ymin and RHandNewY < Ymax and RHandNewX > Xmin and RHandNewX < Xmax then
+local function RCheckZone(ZoneVec6)--Zmin,Zmax,Ymin,Ymax,Xmin,Xmax) -- Z: UP/DOWN, Y:RIGHT LEFT, X FORWARD BACKWARD, checks if RHand is in RZone
+	if RHandNewZ > ZoneVec6[1] and RHandNewZ < ZoneVec6[2] and RHandNewY > ZoneVec6[3] and RHandNewY < ZoneVec6[4] and RHandNewX > ZoneVec6[5] and RHandNewX < ZoneVec6[6] then --RHandNewZ > Zmin and RHandNewZ < Zmax and RHandNewY > Ymin and RHandNewY < Ymax and RHandNewX > Xmin and RHandNewX < Xmax then
 		return true
 	else 
 		return false
@@ -713,7 +714,7 @@ end
 	-----EDIT HERE-------------
 	---------------------------
 	--define Haptic zones RHand Z: UP/DOWN, Y:RIGHT LEFT, X FORWARD BACKWARD, checks if RHand is in RZone
-	if 	   RCheckZone(-10, 15, 10, 30, -10, 20+SeatedOffset) then 
+	if 	   RCheckZone(RHZoneRSh)  then							--	-10, 15, 10, 30, -10, 20+SeatedOffset) then 
 		isHapticZoneR =true
 		RZone=1-- RShoulder
 		
@@ -725,7 +726,7 @@ end
 	--	isHapticZoneR= false
 	--	RZone=3-- Over Head
 		
-	elseif RCheckZone(-100,-60,22,50,-10,10+SeatedOffset)   then
+	elseif RCheckZone(RHZoneRHip) then				-- -100,-60,22,50,-10,10+SeatedOffset)   then
 		isHapticZoneR= true
 		RZone=4--RHip
 		
@@ -737,7 +738,7 @@ end
 	--	isHapticZoneR= false
 	--	RZone=6--ChestLeft
 	--	
-	elseif RCheckZone(-40,-25,5,15,0,10+SeatedOffset)  then
+	elseif RCheckZone(RHZoneRChest)				--	-40,-25,5,15,0,10+SeatedOffset)  then
 		isHapticZoneR= true
 		RZone=7--ChestRight
 	--	
@@ -757,11 +758,11 @@ end
 		RZone=0--EMPTY
 	end
 	--define Haptic zone Lhandx Z: UP/DOWN, Y:RIGHT LEFT, X FORWARD BACKWARD, checks if RHand is in RZone
-	if LCheckZone(-10, 15, 10, 30, -10, 20+SeatedOffset) then
+	if LCheckZone(LHZoneRSh) then					--	-10, 15, 10, 30, -10, 20+SeatedOffset) then
 		isHapticZoneL =true
 		LZone=1-- RShoulder
 		
-	elseif LCheckZone (-10, 15, -30, -10, -10, 20+SeatedOffset) then
+	elseif LCheckZone ( LHZoneLSh) then		---10, 15, -30, -10, -10, 20+SeatedOffset) then
 		isHapticZoneL =true
 		LZone=2--Left Shoulder
 		
@@ -773,15 +774,15 @@ end
 	--	isHapticZoneL= true
 	--	LZone=4--RPouch
 		
-	elseif LCheckZone(-100,-60,-50,-10,-10,10+SeatedOffset)  then
+	elseif LCheckZone(LHZoneLHip) then 		-- -100,-60,-50,-10,-10,10+SeatedOffset)  then
 		isHapticZoneL= true
 		LZone=5--LPouch
 		
-	elseif LCheckZone(-40,-25,-15,-5,0,10+SeatedOffset)   then
+	elseif LCheckZone(LHZoneLChest)	then-- -40,-25,-15,-5,0,10+SeatedOffset)   then
 		isHapticZoneL= true
 		LZone=6--ChestLeft
 		
-	elseif LCheckZone(-40,-25,5,15,0,10+SeatedOffset)  then
+	elseif LCheckZone(LHZoneRChest) then 		-- -40,-25,5,15,0,10+SeatedOffset)  then
 		isHapticZoneL= true
 		LZone=7--ChestRight
 		

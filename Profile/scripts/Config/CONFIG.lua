@@ -33,7 +33,8 @@ config_table = {
     First_Person_Riding = true,
     Extra_Block_Range = 5,
     Melee_Power = 360,
-	
+	ReticleAlwaysOn =true,
+	UI_Follows_View =true
 }
 
 json_files = fs.glob(config_filename)
@@ -69,7 +70,8 @@ FirstPersonRiding = config_table.First_Person_Riding
 SwordSidewaysIsBlock = config_table.Sword_Sideways_Is_Block
 ExtraBlockRange = config_table.Extra_Block_Range
 MeleePower = config_table.Melee_Power
-
+ReticleAlwaysOn = config_table.ReticleAlwaysOn
+UIFollowsView = config_table.UI_Follows_View
 
 local function uevr_version_check()
     imgui.text("UEVR Version Check: ")
@@ -162,8 +164,10 @@ uevr.sdk.callbacks.on_draw_ui(function()
 
     imgui.text("Features")
 	
+	UIFollowsView = create_checkbox("UI Follows View", "UI Follows View")
     Enable_Lumen_Indoors = create_checkbox("Enable Lumen Indoors", "Enable_Lumen_Indoors")
     Faster_Projectiles = create_checkbox("Faster Projectiles", "Faster_Projectiles")
+	ReticleAlwaysOn = create_checkbox("Reticle Always On", "Reticle Always On")
     VisibleHelmet = create_checkbox("Helmet Visibility", "Visible_Helmet")
     HapticFeedback = create_checkbox("Holster Haptic Feedback", "Holster_Haptic_Feedback")
     FirstPersonRiding = create_checkbox("First Person Horse Riding", "First_Person_Riding")
