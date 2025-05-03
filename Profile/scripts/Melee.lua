@@ -180,7 +180,7 @@ if not isRidng then
 	local PosYNew=WeaponHand_Pos.y
 	local PosZNew=WeaponHand_Pos.z
 	
-	PosDiffWeaponHand = math.sqrt((PosXNew-PosXOld)^2+(PosYNew-PosYOld)^3+(PosZNew-PosZOld)^2)*10000
+	PosDiffWeaponHand = math.sqrt((PosXNew-PosXOld)^2+(PosYNew-PosYOld)^2+(PosZNew-PosZOld)^2)*(1/delta)*200
 	PosZOld=PosZNew
 	PosYOld=PosYNew
 	PosXOld=PosXNew
@@ -190,7 +190,7 @@ if not isRidng then
 	local PosYNewSecondary=SecondaryHand_Pos.y
 	local PosZNewSecondary=SecondaryHand_Pos.z
 	
-	PosDiffSecondaryHand = math.sqrt((PosXNewSecondary-PosXOldSecondary)^2+(PosYNewSecondary-PosYOldSecondary)^3+(PosZNewSecondary-PosZOldSecondary)^2)*10000
+	PosDiffSecondaryHand = math.sqrt((PosXNewSecondary-PosXOldSecondary)^2+(PosYNewSecondary-PosYOldSecondary)^2+(PosZNewSecondary-PosZOldSecondary)^2)*(1/delta)*200
 	PosZOldSecondary=PosZNewSecondary
 	PosYOldSecondary=PosYNewSecondary
 	PosXOldSecondary=PosXNewSecondary
@@ -512,11 +512,7 @@ if not isRidng then
 	--DeltaAimMethod=DeltaAimMethod+delta
 if isBow ==false and isRiding==false then
 	
-	if Abutton and string.find(uevr.params.vr:get_mod_value("UI_FollowView"),"true") then
-		uevr.params.vr.set_mod_value("VR_AimMethod", "1")
-	else
-		uevr.params.vr.set_mod_value("VR_AimMethod", "2")
-	end
+
 		if isHit5  then
 		--pawn:SendAttack(0,1)
 		--isHit5=false
@@ -587,11 +583,11 @@ local PrepR=false
 uevr.sdk.callbacks.on_xinput_get_state(
 function(retval, user_index, state)
 if Init==true then
-	pressButton(state,XINPUT_GAMEPAD_B)
+	
 	Init=2
 end
 --print(isBlock)
-if isBlock and PosDiffWeaponHand<MeleePower  then
+if isBlock and PosDiffWeaponHand<MeleePower and SwordSidewaysIsBlock    then
 	--print("trogger")
 	state.Gamepad.bLeftTrigger=255
 end
