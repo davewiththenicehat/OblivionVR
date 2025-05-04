@@ -715,6 +715,8 @@ local function AdjustSceneComponentAngle(c_pawn)
 end
 
 local function UpdateReticleDistance(reticle_plane_component)
+	if reticle_plane_component== nil then
+		return end
 --	pcall(function()
 	--if string.find(Get_Scope_Object(c_pawn:GetCurrentArm()):get_fname():to_string(),"Collimator") then
 		local game_engine = UEVR_UObjectHook.get_first_object_by_class(game_engine_class)
@@ -725,7 +727,8 @@ local function UpdateReticleDistance(reticle_plane_component)
 		local End = Start+  right_hand_component:GetForwardVector()*8192
 		local hit5 = kismet_system_library:LineTraceSingle(world, Start, End, 0, true, ignore2_actors, 0, reusable_hit_result5, true, zero_color, zero_color, 1.0)
 		local range= 2500--reusable_hit_result5.Distance
-		reticle_plane_component:K2_SetRelativeLocation(temp_vec3:set(range, 0, 10), false, reusable_hit_result, false)
+	
+	reticle_plane_component:K2_SetRelativeLocation(temp_vec3:set(range, 0, 10), false, reusable_hit_result, false)
 		reticle_plane_component:SetWorldScale3D(temp_vec3:set(0.006*range/100,0.006*range/100, 0.00001))
 	
 	--end)
@@ -769,6 +772,7 @@ end)
 end
 		
 local PreUnequipWpn=nil
+local isMenuSwitch=false
 
 uevr.sdk.callbacks.on_pre_engine_tick(
 	function(engine, delta)
@@ -781,11 +785,7 @@ uevr.sdk.callbacks.on_pre_engine_tick(
 	if isMenu and isMenuSwitch==false then
 		isMenuSwitch=true
 	end
-	if not isMenu and isMenuSwitch then
-		isMenuSwitch=false
-		
-		
-	end
+
 	
 	
         local viewport = engine.GameViewport
@@ -795,6 +795,7 @@ uevr.sdk.callbacks.on_pre_engine_tick(
             if world then
                 local level = world.PersistentLevel
 				if not isMenu and isMenuSwitch then
+					
 					isMenuSwitch=false
 					reticle_plane_component:SetVisibility(false)
 					print("Exit Menu.. Reseting")
@@ -837,9 +838,15 @@ uevr.sdk.callbacks.on_pre_engine_tick(
      
  
 		UpdateReticleDistance(reticle_plane_component)
-	if not ReticleAlwaysOn then 
+	
+	if reticle_plane_component~=nil then
+		if not ReticleAlwaysOn then 
+			
 		switch_scope_state()
-	else reticle_plane_component:SetVisibility(true)
+			
+		else 
+		reticle_plane_component:SetVisibility(true)
+		end
 	end
 	--print(reticle_plane_component)
 	

@@ -31,7 +31,7 @@ config_table = {
     Sword_Sideways_Is_Block = false,
     First_Person_Riding = true,
     Extra_Block_Range = 5,
-    Melee_Power = 360,
+    Melee_Power = 700,
 	ReticleAlwaysOn =true,
 	UI_Follows_View =true
 }
@@ -167,12 +167,12 @@ uevr.sdk.callbacks.on_draw_ui(function()
     Enable_Lumen_Indoors = create_checkbox("Enable Lumen Indoors", "Enable_Lumen_Indoors")
     Faster_Projectiles = create_checkbox("Faster Projectiles", "Faster_Projectiles")
 	ReticleAlwaysOn = create_checkbox("Reticle Always On", "Reticle Always On")
-    VisibleHelmet = create_checkbox("Helmet Visibility", "Visible_Helmet")
+   -- VisibleHelmet = create_checkbox("Helmet Visibility", "Visible_Helmet")
     HapticFeedback = create_checkbox("Holster Haptic Feedback", "Holster_Haptic_Feedback")
     FirstPersonRiding = create_checkbox("First Person Horse Riding", "First_Person_Riding")
     SwordSidewaysIsBlock = create_checkbox("Hold Sword Sideways To Block", "Sword_Sideways_Is_Block")
     ExtraBlockRange = create_slider_int("Extra Block Range (in cm)", "Extra_Block_Range", 0, 50)
-    MeleePower = create_slider_int("Melee Power (swing intensity)", "Melee_Power", 0, 1000)
+    MeleePower = create_slider_int("Melee Power (swing intensity)", "Melee_Power", 0, 1500)
 end)
 
 

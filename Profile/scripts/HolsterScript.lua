@@ -681,8 +681,8 @@ local function RCheckZone(ZoneVec6)--Zmin,Zmax,Ymin,Ymax,Xmin,Xmax) -- Z: UP/DOW
 		return false
 	end
 end
-local function LCheckZone(Zmin,Zmax,Ymin,Ymax,Xmin,Xmax) -- Z: UP/DOWN, Y:RIGHT LEFT, X FORWARD BACKWARD, checks if LHand is in LZone
-	if LHandNewZ > Zmin and LHandNewZ < Zmax and LHandNewY > Ymin and LHandNewY < Ymax and LHandNewX > Xmin and LHandNewX < Xmax then
+local function LCheckZone(ZoneVec6) -- Z: UP/DOWN, Y:RIGHT LEFT, X FORWARD BACKWARD, checks if LHand is in LZone
+	if LHandNewZ > ZoneVec6[1] and LHandNewZ < ZoneVec6[2] and LHandNewY > ZoneVec6[3] and LHandNewY < ZoneVec6[4] and LHandNewX > ZoneVec6[5] and LHandNewX < ZoneVec6[6] then
 		return true
 	else 
 		return false
@@ -738,7 +738,7 @@ end
 	--	isHapticZoneR= false
 	--	RZone=6--ChestLeft
 	--	
-	elseif RCheckZone(RHZoneRChest)				--	-40,-25,5,15,0,10+SeatedOffset)  then
+	elseif RCheckZone(RHZoneRChest)	then		 	--	-40,-25,5,15,0,10+SeatedOffset)  then
 		isHapticZoneR= true
 		RZone=7--ChestRight
 	--	

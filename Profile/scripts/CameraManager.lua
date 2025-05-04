@@ -30,14 +30,21 @@ local Alpha  	= nil
 local AlphaDiff
 local LastState= isBow
 local ConditionChagned=false
+local isMenuEnter=false
 
 uevr.sdk.callbacks.on_pre_engine_tick(
 function(engine, delta)
 
-if isMenu then
+if isMenu and isMenuEnter==false then
 	uevr.params.vr.set_mod_value("UI_FollowView", "false")
-elseif UIFollowsView and not isMenu then 
+	isMenuEnter=true
+	print("CHeck")
+	vr:recenter_view()
+elseif  not isMenu then
+	isMenuEnter=false
+	if UIFollowsView then 
 	uevr.params.vr.set_mod_value("UI_FollowView", "true")
+	else uevr.params.vr.set_mod_value("UI_FollowView", "false") end
 end
 
 
@@ -167,13 +174,13 @@ end
 
 	SnapAngle = PositiveIntegerMask(uevr.params.vr:get_mod_value("VR_SnapturnTurnAngle"))
 	if SnapTurn then
-		if ThumbRX >200 and RXState ==0 then
+		if ThumbRX >200 and RXState ==0 and not isMenu then
 			DecoupledYawCurrentRot=DecoupledYawCurrentRot + SnapAngle
 			RXState=1
-		elseif ThumbRX <-200 and RXState ==0 then
+		elseif ThumbRX <-200 and RXState ==0 and not isMenu  then
 			DecoupledYawCurrentRot=DecoupledYawCurrentRot - SnapAngle
 			RXState=1
-		elseif ThumbRX <= 200 and ThumbRX >=-200 then
+		elseif ThumbRX <= 200 and ThumbRX >=-200  then
 			RXState=0
 		end
  
@@ -185,10 +192,10 @@ end
 	
 		local rate = state.Gamepad.sThumbRX/32767
 					rate =  rate*rate*rate
-		if ThumbRX >2200  then
+		if ThumbRX >2200 and not isMenu   then
 			DecoupledYawCurrentRot=DecoupledYawCurrentRot + SmoothTurnRate * rate
 			
-		elseif ThumbRX <-2200  then
+		elseif ThumbRX <-2200 and not isMenu   then
 			DecoupledYawCurrentRot=DecoupledYawCurrentRot + SmoothTurnRate * rate
 		
 		end

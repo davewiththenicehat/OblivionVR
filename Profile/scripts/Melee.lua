@@ -352,10 +352,10 @@ if not isRiding then
 		end
 		local HitBoxComponent= pawn.WeaponsPairingComponent.ShieldActor:GetComponentByClass(VHitBoxClass)
 		HitBoxComponent.RelativeLocation.X=24.15
-		HitBoxComponent.RelativeLocation.Y= 20.28
+		HitBoxComponent.RelativeLocation.Y= 20.28+ExtraBlockRange
 		HitBoxComponent.RelativeLocation.Z=0.66
 		HitBoxComponent.BoxExtent.X=30.82
-		HitBoxComponent.BoxExtent.Y=20.27
+		HitBoxComponent.BoxExtent.Y=20.27+ExtraBlockRange
 		HitBoxComponent.BoxExtent.Z=37.33
 		--HitBoxComponent,BodyInstance.CollisionEnabled=1
 		--HitBoxComponent,BodyInstance.CollisionResponses.ResponseToChannels
@@ -510,7 +510,7 @@ if not isRiding then
 	end
 
 	--DeltaAimMethod=DeltaAimMethod+delta
-if isBow ==false and isRiding==false then
+if isBow ==false and isRiding==false and not isMenu then
 	uevr.params.vr.set_mod_value("VR_AimMethod", "2")
 
 		if isHit5  then
@@ -565,8 +565,8 @@ if isBow ==false and isRiding==false then
 			
 			end
 		end
-	elseif isBow and RTrigger ~= 0 then uevr.params.vr.set_mod_value("VR_AimMethod", "0")
-	elseif isBow and RTrigger == 0 then uevr.params.vr.set_mod_value("VR_AimMethod", "0")
+	elseif (isBow and RTrigger ~= 0) or isMenu then uevr.params.vr.set_mod_value("VR_AimMethod", "0")
+	elseif (isBow and RTrigger == 0) or isMenu then uevr.params.vr.set_mod_value("VR_AimMethod", "0")
 	
 	end
 	AttackDelta=AttackDelta+delta
