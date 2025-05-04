@@ -778,6 +778,15 @@ uevr.sdk.callbacks.on_pre_engine_tick(
 	-- spawn_scope(engine, c_pawn)
 	--attach_components_to_weapon(right_hand_component)
 	--end
+	if isMenu and isMenuSwitch==false then
+		isMenuSwitch=true
+	end
+	if not isMenu and isMenuSwitch then
+		isMenuSwitch=false
+		
+		
+	end
+	
 	
         local viewport = engine.GameViewport
         if viewport then
@@ -785,12 +794,28 @@ uevr.sdk.callbacks.on_pre_engine_tick(
     
             if world then
                 local level = world.PersistentLevel
-    
-                if last_level ~= level then
+				if not isMenu and isMenuSwitch then
+					isMenuSwitch=false
+					reticle_plane_component:SetVisibility(false)
+					print("Exit Menu.. Reseting")
+					destroy_actor(scope_actor)
+                    scope_plane_component = nil
+                    scene_capture_component = nil
+					reticle_plane_component= nil
+                    render_target = nil
+                    scope_mesh = nil
+					spawn_scope(engine, c_pawn)
+					attach_components_to_weapon(right_hand_component)
+                    reset_static_objects()
+                    init_static_objects()
+				end
+				
+				if last_level ~= level  then
                     print("Level changed .. Reseting")
                     destroy_actor(scope_actor)
                     scope_plane_component = nil
                     scene_capture_component = nil
+					reticle_plane_component= nil
                     render_target = nil
                     scope_mesh = nil
 					spawn_scope(engine, c_pawn)
