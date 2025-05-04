@@ -2,8 +2,6 @@ require(".\\Config\\CONFIG")
 ------------------------------------------------------------------------------------
 -- Helper section
 ------------------------------------------------------------------------------------
-if Enable_Lumen_Indoors then
-
 local api = uevr.api
 local vr = uevr.params.vr
 
@@ -83,6 +81,7 @@ local game_engine_class = api:find_uobject("Class /Script/Engine.GameEngine")
 
 -- runs on level change begin
 local function FadeToBlackBegin(fn, obj, locals, result)
+    if not Enable_Lumen_Indoors then return end
     print("level change begin, disabling lumen\n")
     set_cvar_int("r.DynamicGlobalIlluminationMethod", 0)
     set_cvar_int("r.Lumen.DiffuseIndirect.Allow", 0)
@@ -90,6 +89,7 @@ end
 
 -- runs on game level load
 local function FadeToGameBegin(fn, obj, locals, result)
+    if not Enable_Lumen_Indoors then return end
     print("Fade to game\n")
     local game_engine = UEVR_UObjectHook.get_first_object_by_class(game_engine_class)
 
@@ -118,7 +118,9 @@ local function FadeToGameBegin(fn, obj, locals, result)
     end
 end
 
+
 hook_function("Class /Script/Altar.VLevelChangeData", "OnFadeToBlackBeginEventReceived", false, nil, FadeToBlackBegin, false)
 hook_function("Class /Script/Altar.VLevelChangeData", "OnFadeToGameBeginEventReceived", false, nil, FadeToGameBegin, false)
 
-end
+
+

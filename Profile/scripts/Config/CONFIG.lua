@@ -9,7 +9,6 @@ local config_filename = "main-config.json"
 local title = "Oblivion Remastered VR Mod Settings"
 local author = "Pande4360"
 local profile_name = "6dof Attached Items Profile (Righthand Aiming)"
---local profile_version = "1.07e: HOTFIX 4"
 
 local required_uevr_commit_count = nil
 local uevr_version = nil
