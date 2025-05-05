@@ -36,7 +36,7 @@ function on_lazy_poll()
 				else--if 	--string.find(pawn.FirstPersonUpperBodyChildActorComponent.ChildActor:get_fname():to_string(),"Cuirass") then
 					if pawn.FirstPersonHandsChildActorComponent.ChildActor ~=nil then
 						hands.create(pawn.FirstPersonHandsChildActorComponent.ChildActor.RootSkeletalMeshComponent)
-					else --hands.create(pawn.FirstPersonSkeletalMeshComponent)	
+					else --hands.create(pawn.Mesh)	
 					end
 				end
 			elseif pawn.FirstPersonHandsChildActorComponent.ChildActor ~=nil then

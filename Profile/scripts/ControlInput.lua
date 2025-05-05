@@ -1,17 +1,19 @@
 require(".\\Subsystems\\UEHelper")
 local api = uevr.api
 local QuickMenu=false
+local BbuttonNotPressedAfterMenu=false
+
 uevr.sdk.callbacks.on_xinput_get_state(
 function(retval, user_index, state)
 
 
-if Ybutton and lShoulder and QuickMenu==false then
+if Ybutton and  QuickMenu==false then
 	unpressButton(state,XINPUT_GAMEPAD_Y)
-	api:get_player_controller():Quick7Input_Pressed()
+	api:get_player_controller():QuickMenuInput_Pressed()
 	QuickMenu=true
-elseif not Ybutton or not lShoulder then
+elseif not Ybutton  then
 	if QuickMenu== true then
-		api:get_player_controller():Quick7Input_Released()
+		api:get_player_controller():QuickMenuInput_Released()
 		QuickMenu=false
 	end
 end
@@ -20,14 +22,18 @@ if isMenu==false then
 		unpressButton(state,XINPUT_GAMEPAD_Y)
 		--pressButton(state,XINPUT_GAMEPAD_RIGHT_SHOULDER)
 	end
-	if Xbutton then
+	if not Bbutton then
+	BbuttonNotPressedAfterMenu=true
+	end
+	if Xbutton  then
+		--XbuttonNotPressedAfterMenu=true
 		unpressButton(state,XINPUT_GAMEPAD_X)
 		pressButton(state,XINPUT_GAMEPAD_RIGHT_SHOULDER)
 	end
 	if rShoulder then
 		unpressButton(state,XINPUT_GAMEPAD_RIGHT_SHOULDER)
 	end
-	if Bbutton then
+	if Bbutton and BbuttonNotPressedAfterMenu then
 		unpressButton(state,XINPUT_GAMEPAD_B)
 		pressButton(state,XINPUT_GAMEPAD_X)
 	end
@@ -47,5 +53,6 @@ if isMenu==false then
 	if ThumbRY < -30000 then
 		pressButton(state,XINPUT_GAMEPAD_B)
 	end
-end
+else BbuttonNotPressedAfterMenu=false end
+
 end)

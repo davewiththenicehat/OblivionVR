@@ -31,7 +31,7 @@ local AlphaDiff
 local LastState= isBow
 local ConditionChagned=false
 local isMenuEnter=false
-
+local YawLast=0
 uevr.sdk.callbacks.on_pre_engine_tick(
 function(engine, delta)
 
@@ -40,13 +40,18 @@ if isMenu and isMenuEnter==false then
 	isMenuEnter=true
 	print("CHeck")
 	vr:recenter_view()
-elseif  not isMenu then
+	local player =api:get_player_controller(0)
+	player:ClientSetRotation(Vector3f.new(0,YawLast,0),true)
+elseif  not isMenu and isMenuEnter  then
 	isMenuEnter=false
 	if UIFollowsView then 
 	uevr.params.vr.set_mod_value("UI_FollowView", "true")
 	else uevr.params.vr.set_mod_value("UI_FollowView", "false") end
+	
 end
-
+if not isMenu then
+	YawLast= hmd_component:K2_GetComponentRotation().y
+end
 
 --print(isRiding
 if not isRiding then

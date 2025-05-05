@@ -33,7 +33,10 @@ config_table = {
     Extra_Block_Range = 5,
     Melee_Power = 700,
 	ReticleAlwaysOn =true,
-	UI_Follows_View =true
+	UI_Follows_View =true,
+	DarkerDarks=true
+	--HandIndex=2
+	--isRhand = true	
 }
 
 json_files = fs.glob(config_filename)
@@ -71,6 +74,9 @@ ExtraBlockRange = config_table.Extra_Block_Range
 MeleePower = config_table.Melee_Power
 ReticleAlwaysOn = config_table.ReticleAlwaysOn
 UIFollowsView = config_table.UI_Follows_View
+DarkerDarks=config_table.DarkerDarks
+--isRhand = config_table.isRhand
+
 
 local function uevr_version_check()
     imgui.text("UEVR Version Check: ")
@@ -171,7 +177,10 @@ uevr.sdk.callbacks.on_draw_ui(function()
     HapticFeedback = create_checkbox("Holster Haptic Feedback", "Holster_Haptic_Feedback")
     FirstPersonRiding = create_checkbox("First Person Horse Riding", "First_Person_Riding")
     SwordSidewaysIsBlock = create_checkbox("Hold Sword Sideways To Block", "Sword_Sideways_Is_Block")
-    ExtraBlockRange = create_slider_int("Extra Block Range (in cm)", "Extra_Block_Range", 0, 50)
+  
+	--isRhand = create_checkbox("Right Hand Mode", "isRhand")
+	DarkerDarks=create_checkbox("Darker interiors and nights", "DarkerDarks") 
+	ExtraBlockRange = create_slider_int("Extra Block Range (in cm)", "Extra_Block_Range", 0, 50)
     MeleePower = create_slider_int("Melee Power (swing intensity)", "Melee_Power", 0, 1500)
 end)
 

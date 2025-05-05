@@ -22,6 +22,41 @@ function find_static_class(name)
     return c:get_class_default_object()
 end
 
+function find_first_of(className, includeDefault)
+	if includeDefault == nil then includeDefault = false end
+	local class =  find_required_object(className)
+	if class ~= nil then
+		return UEVR_UObjectHook.get_first_object_by_class(class, includeDefault)
+	end
+	return nil
+end
+
+function find_required_object_no_cache(class, full_name)
+
+
+    local matches = class:get_objects_matching(false)
+
+
+    for i, obj in ipairs(matches) do
+
+
+        if obj ~= nil and obj:get_full_name() == full_name then
+
+
+            return obj
+
+
+        end
+
+
+    end
+
+
+    return nil
+
+
+end
+
 function SearchSubObjectArrayForObject(ObjArray, string_partial)
 local FoundItem= nil
 	for i, InvItems in ipairs(ObjArray) do
@@ -158,6 +193,7 @@ function UpdateInput(state)
 	--end
 
 end
+
 
 
 local function UpdateMenuStatus(Player)

@@ -142,6 +142,9 @@ local SendAttack=false
 local Init=false
 local InitDelta=0
 
+local LeftController=		 uevr.params.vr.get_left_joystick_source()
+local RightController=		 uevr.params.vr.get_right_joystick_source()
+
 local function UpdatePlayerCollision(delta)
 	if pawn.CapsuleComponent~=nil and Init==false then
 	InitDelta=InitDelta+delta
@@ -172,9 +175,15 @@ if not isRiding then
 	--print(DeltaCheck)
 	player= api:get_player_controller(0)
 	pawn = api:get_local_pawn(0)
+	if isRhand then
+		WHandIndex=2
+		SHandIndex=1
+	else HandIndex=1
+		SHandIndex=2
+	end
 	--print(isRiding)
 	--local SecondaryHandIndex = uevr.params.vr.get_right_controller_index()
-	uevr.params.vr.get_pose(2, WeaponHand_Pos, WeaponHand_Rot)
+	uevr.params.vr.get_pose(WHandIndex, WeaponHand_Pos, WeaponHand_Rot)
 	
 	local PosXNew=WeaponHand_Pos.x
 	local PosYNew=WeaponHand_Pos.y
@@ -185,7 +194,7 @@ if not isRiding then
 	PosYOld=PosYNew
 	PosXOld=PosXNew
 	
-	uevr.params.vr.get_pose(1, SecondaryHand_Pos, SecondaryHand_Rot)
+	uevr.params.vr.get_pose(SHandIndex, SecondaryHand_Pos, SecondaryHand_Rot)
 	local PosXNewSecondary=SecondaryHand_Pos.x
 	local PosYNewSecondary=SecondaryHand_Pos.y
 	local PosZNewSecondary=SecondaryHand_Pos.z
@@ -289,12 +298,14 @@ if not isRiding then
 							SendAttack=false
 							if  HitBoxReset and PosDiffWeaponHand>MeleePower*1.7 then
 								HitBoxReset=false
-								SendAttack=false								
+								SendAttack=false	
+								uevr.params.vr.trigger_haptic_vibration(0.0, 0.1, 1.0, 5.0, RightController)
 								pawn:SendMeleeHitOnPairedPawn(comp:GetOwner(),true,2)
 								player:SendToConsole("player.modav Fatigue -30")
 							elseif  HitBoxReset and PosDiffWeaponHand>MeleePower then
 								HitBoxReset=false
-								SendAttack=false								
+								SendAttack=false	
+								uevr.params.vr.trigger_haptic_vibration(0.0, 0.1, 1.0, 5, RightController)								
 								pawn:SendMeleeHitOnPairedPawn(comp:GetOwner(),false,2)
 								player:SendToConsole("player.modav Fatigue -5")
 							end
@@ -308,6 +319,7 @@ if not isRiding then
 									isBlock=true
 									--pawn:SendAttack(3,5)
 									--pawn:SendAttackStartedEvent()
+									uevr.params.vr.trigger_haptic_vibration(0.0, 0.1, 1.0, 100.0, RightController)
 									pawn:SendBlockHit()
 									--pawn:SendMeleeHitOnPairedPawn(comp:GetOwner():GetOwner(),false,1)
 									DeltaBlock=0
@@ -376,6 +388,7 @@ if not isRiding then
 						--print("Blocked")			
 									--if not isAimMethodSwitched then 
 										isBlock=true
+										uevr.params.vr.trigger_haptic_vibration(0.0, 0.1, 1.0, 255.0, LeftController)
 										pawn:SendBlockHit()
 										DeltaBlock=0
 										break

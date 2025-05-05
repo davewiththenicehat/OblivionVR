@@ -1,7 +1,7 @@
 require(".\\Subsystems\\Trackers")
 require(".\\Config\\CONFIG")
 require(".\\Subsystems\\UEHelper")
-
+require(".\\Subsystems\\assetloader")
 local api = uevr.api
 local vr = uevr.params.vr
 
@@ -180,11 +180,11 @@ end
 
 local function destroy_actor(actor)
     if actor ~= nil and not UEVR_UObjectHook.exists(actor) then
-        pcall(function() 
-            if actor.K2_DestroyActor ~= nil then
-                actor:K2_DestroyActor()
+     --   pcall(function() 
+            if actor ~= nil then
+                actor=nil
             end
-        end)
+       -- end)
     end
     return nil
 end
@@ -297,6 +297,7 @@ local function spawn_scope_plane(world, owner, pos, rt)
 end
 
 local function spawn_reticle_plane(world, owner, pos, tex)
+	print(scope_actor)
     local local_reticle_mesh = scope_actor:AddComponentByClass(staic_mesh_component_c, false, zero_transform, false)
 	if local_reticle_mesh == nil then
         print("Failed to spawn local_reticle_mesh")
@@ -321,7 +322,12 @@ local function spawn_reticle_plane(world, owner, pos, tex)
 
     if plane == nil then
         print("Failed to find plane mesh")
-        api:dispatch_custom_event("LoadAsset", "StaticMesh /Engine/BasicShapes/Cylinder.Cylinder")
+        local fAssetData = CreateAssetData("/Engine/BasicShapes/Cylinder", "/Engine/BasicShapes", "Cylinder", "/Script/Engine", "StaticMesh")
+		 plane =  GetLoadedAsset(fAssetData)
+		 if plane == nil then
+            print("Failed to load asset plane mesh")
+            return
+         end
         return
     end
     local_reticle_mesh:SetStaticMesh(plane)
@@ -338,7 +344,7 @@ local function spawn_reticle_plane(world, owner, pos, tex)
 		--if string.find(Get_Scope_Object(api:get_local_pawn(0):GetCurrentArm()):get_fname():to_string(),"Scope01") or string.find(Get_Scope_Object(api:get_local_pawn(0):GetCurrentArm()):get_fname():to_string(),"Collimator01") then
 	--		wanted_tex= api:find_uobject(sightTexture_name)
 			--dynamic_materialReticle:SetTextureParameterValue("Color", tex)
-			print(tex)
+		--	print(tex)
 		--elseif string.find(Get_Scope_Object(api:get_local_pawn(0):GetCurrentArm()):get_fname():to_string(),"Scope02") then
 		--	wanted_tex= api:find_uobject(sightTexture_name2)
 		--	dynamic_materialReticle:SetTextureParameterValue("LinearColor", wanted_tex)
@@ -794,12 +800,31 @@ uevr.sdk.callbacks.on_pre_engine_tick(
     
             if world then
                 local level = world.PersistentLevel
-				if not isMenu and isMenuSwitch then
+				
+				
+				if last_level ~= level  then
+					if not validate_object(scope_actor) then
+                    print("Level changed .. Reseting")
+                    destroy_actor(scope_actor)
+					scope_actor=nil
+                    scope_plane_component = nil
+                    scene_capture_component = nil
+					reticle_plane_component= nil
+                    render_target = nil
+                    scope_mesh = nil
+					spawn_scope(engine, c_pawn)
+					attach_components_to_weapon(right_hand_component)
+                    reset_static_objects()
+                    init_static_objects()
+					end
+                end
+				if not isMenu and isMenuSwitch and last_level==level then
 					
 					isMenuSwitch=false
 					reticle_plane_component:SetVisibility(false)
 					print("Exit Menu.. Reseting")
 					destroy_actor(scope_actor)
+					scope_actor=nil
                     scope_plane_component = nil
                     scene_capture_component = nil
 					reticle_plane_component= nil
@@ -811,19 +836,6 @@ uevr.sdk.callbacks.on_pre_engine_tick(
                     init_static_objects()
 				end
 				
-				if last_level ~= level  then
-                    print("Level changed .. Reseting")
-                    destroy_actor(scope_actor)
-                    scope_plane_component = nil
-                    scene_capture_component = nil
-					reticle_plane_component= nil
-                    render_target = nil
-                    scope_mesh = nil
-					spawn_scope(engine, c_pawn)
-					attach_components_to_weapon(right_hand_component)
-                    reset_static_objects()
-                    init_static_objects()
-                end
                 last_level = level
             end
         end
