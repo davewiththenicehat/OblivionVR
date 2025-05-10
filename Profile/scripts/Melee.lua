@@ -546,6 +546,7 @@ if isBow ==false and isRiding==false and not isMenu then
 			if DeltaBlockActivator > 0.15 and PosDiffWeaponHand<100 then
 				if SwordSidewaysIsBlock then
 					isBlock=true
+					pawn:SendBlockHit()
 				end
 			end
 		else 
@@ -601,10 +602,7 @@ if Init==true then
 	Init=2
 end
 --print(isBlock)
-if isBlock and PosDiffWeaponHand<MeleePower and SwordSidewaysIsBlock    then
-	--print("trogger")
-	state.Gamepad.bLeftTrigger=255
-end
+
 --local TriggerR = state.Gamepad.bRightTrigger
 --if PosDiffWeaponHand >= MeleePower and Prep == false then
 --	Prep=true

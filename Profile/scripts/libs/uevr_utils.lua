@@ -1175,6 +1175,26 @@ function M.createWidgetComponent(widget, removeFromViewport, twoSided, drawSize)
 		if drawSize ~= nil then
 			component:SetDrawSize(drawSize)
 		end
+		widget.ColorAndOpacity.A=1
+		widget.RenderOpacity=1111100000000000000000
+		widget.ColorAndOpacity.R=100000000000
+		widget.ColorAndOpacity.G=100000000000
+		widget.ColorAndOpacity.B=100000000000
+		local parMat=uevr.api:find_uobject("Material /Engine/EngineMaterials/Widget3DPassThrough.Widget3DPassThrough")
+		 local wanted_mat = uevr.api:find_uobject("MaterialInstanceConstant /Engine/EngineMaterials/Widget3DPassThrough_Translucent.Widget3DPassThrough_Translucent")
+		parMat:set_property("BlendMode", 2)
+		-- --wanted_mat:set_property("TwoSided", true)
+		parMat:set_property("ShadingModel", 0 )
+		--wanted_mat.bDisableDepthTest = true
+		component:SetMaterial(0,wanted_mat)
+		component:SetLightingChannels(false,false,false)
+		component.BlendMode=2
+		local RT=component:GetRenderTarget()
+		
+		--component:set_opacity(0.6)
+		local emissive_mesh_material_name = uevr.api:find_uobject("Material /Engine/EngineMaterials/EmissiveMeshMaterial.EmissiveMeshMaterial")
+		--local dynamic_materialReticle = component:CreateDynamicMaterialInstance(0, wanted_mat, "CompassMat")
+		-- dynamic_materialReticle:SetTextureParameterValue("LinearColor", RT)
 		-- component:SetRenderCustomDepth(true)
 		-- component:SetCustomDepthStencilValue(100)
 		-- component:SetCustomDepthStencilWriteMask(1)

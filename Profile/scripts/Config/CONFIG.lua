@@ -30,11 +30,11 @@ config_table = {
     Holster_Haptic_Feedback = true,
     Sword_Sideways_Is_Block = false,
     First_Person_Riding = true,
-    Extra_Block_Range = 5,
+    Extra_Block_Range = 0,
     Melee_Power = 700,
 	ReticleAlwaysOn =true,
 	UI_Follows_View =true,
-	DarkerDarks=true
+	DarkerDarks=false
 	--HandIndex=2
 	--isRhand = true	
 }
@@ -172,7 +172,7 @@ uevr.sdk.callbacks.on_draw_ui(function()
 	UIFollowsView = create_checkbox("UI Follows View", "UI Follows View")
     Enable_Lumen_Indoors = create_checkbox("Enable Lumen Indoors", "Enable_Lumen_Indoors")
     Faster_Projectiles = create_checkbox("Faster Projectiles", "Faster_Projectiles")
-	ReticleAlwaysOn = create_checkbox("Reticle Always On", "Reticle Always On")
+	--ReticleAlwaysOn = create_checkbox("Reticle Always On", "Reticle Always On")
    -- VisibleHelmet = create_checkbox("Helmet Visibility", "Visible_Helmet")
     HapticFeedback = create_checkbox("Holster Haptic Feedback", "Holster_Haptic_Feedback")
     FirstPersonRiding = create_checkbox("First Person Horse Riding", "First_Person_Riding")
