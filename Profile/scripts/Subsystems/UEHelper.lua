@@ -131,6 +131,8 @@ current_scope_state=false
  Ybutton = false
  SelectButton=false
 
+
+isSprinting=false
 isDriving=false
 isMenu=false
 isWeaponDrawn=false
@@ -181,7 +183,7 @@ function UpdateInput(state)
 
 	
 --UnpressButton
-	
+
 	--	unpressButton(state,XINPUT_GAMEPAD_LEFT_SHOULDER)
 	--	unpressButton(state,XINPUT_GAMEPAD_LEFT_THUMB)
 	
@@ -209,7 +211,16 @@ local function UpdateCombatStanceStatus(pawn)
 	else isWeaponDrawn=false
 	end
 end
+local function UpdateSprintStatus()
 
+	if lShoulder and ThumbLY >=28000  then 
+		isSprinting=true
+	end
+	if   ThumbLY<15000 then
+			isSprinting=false
+	end
+	
+end
 
 uevr.sdk.callbacks.on_xinput_get_state(
 function(retval, user_index, state)
@@ -239,4 +250,5 @@ UpdateRidingStatus(dpawn)
 UpdateMenuStatus(Player)
 UpdateCombatStanceStatus(dpawn)	
 UpdateBowStatus(dpawn)	
+UpdateSprintStatus()
 end)

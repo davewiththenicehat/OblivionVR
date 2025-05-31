@@ -1,5 +1,5 @@
 local uevrUtils = require("libs/uevr_utils")
-local flickerFixer = require("libs/flicker_fixer")
+--local flickerFixer = require("libs/flicker_fixer")
 local controllersModule = require("libs/controllers")
 uevrUtils.initUEVR(uevr)
 local animation = require("libs/animation")
@@ -36,7 +36,8 @@ function on_lazy_poll()
 				else--if 	--string.find(pawn.FirstPersonUpperBodyChildActorComponent.ChildActor:get_fname():to_string(),"Cuirass") then
 					if pawn.FirstPersonHandsChildActorComponent.ChildActor ~=nil then
 						hands.create(pawn.FirstPersonHandsChildActorComponent.ChildActor.RootSkeletalMeshComponent)
-					else --hands.create(pawn.Mesh)	
+						
+					else --hands.create(pawn.MainSkeletalMeshComponent)	
 					end
 				end
 			elseif pawn.FirstPersonHandsChildActorComponent.ChildActor ~=nil then
@@ -312,6 +313,22 @@ if not isMenu and MenuChanged then
 	end
 	hands.destroyHands()
 	hands.reset()
+end
+local BowHMDDiff=0
+local BowHMDDist=0
+if rightHandComponent~=nil then
+	BowHMDDiff= rightHandComponent:K2_GetComponentLocation()- hmd_component:K2_GetComponentLocation()
+
+	BowHMDDist= math.sqrt(BowHMDDiff.x^2+BowHMDDiff.y^2+BowHMDDiff.z^2)
+end
+if isBow and BowHMDDist< 15 and not isMenu then 
+	if rightHandComponent ~= nil then
+		rightHandComponent:SetVisibility(false)
+	end
+elseif isBow and not isMenu then
+	if rightHandComponent ~= nil then
+		rightHandComponent:SetVisibility(true)
+	end
 end
 if not hands.exists() and not  string.find(pawn:get_fname():to_string(),"Horse")  then
 	if pawn.FirstPersonUpperBodyChildActorComponent.ChildActor ~=nil then

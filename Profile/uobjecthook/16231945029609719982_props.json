@@ -1,10 +1,10 @@
 {
-    "hide": true,
-    "hide_legacy": true,
+    "hide": false,
+    "hide_legacy": false,
     "path": [
         "Acknowledged Pawn",
         "Properties",
-        "HandsChildActorComponent"
+        "MainSkeletalMeshComponent"
     ],
     "properties": [],
     "type": "properties"

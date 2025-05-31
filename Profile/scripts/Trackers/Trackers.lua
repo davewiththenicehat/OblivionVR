@@ -36,7 +36,7 @@ local rControllerIndex= 2
 	
 	local hmd_actor = nil -- The purpose of the HMD actor is to accurately track the HMD's world transform
 	local left_hand_actor = nil
-	local right_hand_actor = nil
+	 right_hand_actor = nil
 	 left_hand_component = nil
 	 right_hand_component = nil
 	hmd_component = nil
@@ -280,6 +280,25 @@ local rControllerIndex= 2
 		if left_hand_actor == nil or right_hand_actor == nil then
 			spawn_hand_actors()
 		end
+			--Helper Angles
+	Diff_Vector_LR=  left_hand_component:K2_GetComponentLocation()-right_hand_component:K2_GetComponentLocation() 
+	
+	
+	
+	Diff_Vector_LR_Arrow=left_hand_component:K2_GetComponentLocation() -right_hand_component:K2_GetComponentLocation()-- - right_hand_component:GetRightVector()*0 -right_hand_component:GetUpVector()*0 - +left_hand_component:GetUpVector()*0
+	
+    Diff_Rotator_LR= kismet_math_library:Conv_VectorToRotator(Diff_Vector_LR)
+	--Diff_Rotator_LR_Quat = kismet_math_library:Quat_MakeFromEuler(Diff_Rotator_LR)
+	
+	Diff_Rotator_LR_Arrow =kismet_math_library:Conv_VectorToRotator(Diff_Vector_LR_Arrow)
+	Diff_Vector_HR= right_hand_component:K2_GetComponentLocation() - hmd_component:K2_GetComponentLocation()
+    Diff_Rotator_HR= kismet_math_library:Conv_VectorToRotator(Diff_Vector_HR)
+	RightRotator = right_hand_component:K2_GetComponentRotation()
+	LeftCompRotation=left_hand_component:K2_GetComponentRotation()
+	LeftRotator =kismet_math_library:Conv_VectorToRotator(left_hand_component:GetForwardVector())
+	HmdRotator = hmd_component:K2_GetComponentRotation()
+	--print(Diff_Rotator_LR.y-LeftCompRotation.y)
+	--print(Diff_Rotator_LR.y)
 	end)
 	
 	-- Use Vector3d if this is a UE5 game (double precision)

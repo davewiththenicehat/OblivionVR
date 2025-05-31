@@ -2,6 +2,8 @@ require(".\\Subsystems\\UEHelper")
 local api = uevr.api
 local QuickMenu=false
 local BbuttonNotPressedAfterMenu=false
+ 
+local SprintState=false
 
 uevr.sdk.callbacks.on_xinput_get_state(
 function(retval, user_index, state)
@@ -54,5 +56,14 @@ if isMenu==false then
 		pressButton(state,XINPUT_GAMEPAD_B)
 	end
 else BbuttonNotPressedAfterMenu=false end
+
+
+if not isMenu then
+	if not isSprinting  then
+		state.Gamepad.sThumbLX=0
+		state.Gamepad.sThumbLY=0
+
+	end
+end
 
 end)

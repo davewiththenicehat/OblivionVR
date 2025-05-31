@@ -524,8 +524,9 @@ if not isRiding then
 
 	--DeltaAimMethod=DeltaAimMethod+delta
 if isBow ==false and isRiding==false and not isMenu then
+	if isRhand then
 	uevr.params.vr.set_mod_value("VR_AimMethod", "2")
-
+	else uevr.params.vr.set_mod_value("VR_AimMethod", "3") end
 		if isHit5  then
 		--pawn:SendAttack(0,1)
 		--isHit5=false

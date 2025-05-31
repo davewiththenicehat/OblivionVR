@@ -3,12 +3,12 @@ require(".\\Config\\CONFIG")
 local api = uevr.api
 local vr = uevr.params.vr
 
-local skylightIntensityDay = 1.0
+local skylightIntensityDay = 0.7
 local skylightIntensityNight = 0.0
 local sceneBrightnessSkylightScalar = 1.0
 local settingUpdatesPPV = false
 
-local currentSkylightIntensity = 0.9
+local currentSkylightIntensity = 0.7
 
 local isInterior = false
 local isDarkInterior = false
@@ -156,7 +156,7 @@ local function doSkylightUpdate()
 			local skylightIntensity = currentSkylightIntensity
 			local Brightness = 4
 			local MaxBrightness =0
-			local MinBrightness =-4
+			local MinBrightness =-3
 		
 			local diffNightDay = currentSkylightIntensity - tempNight
 			
@@ -168,10 +168,10 @@ local function doSkylightUpdate()
 				local sunrisePercent = (sunAngleOffset + sunSideAngle) / sunrise
 				if sunrisePercentLast-sunrisePercent< 0 and 0-sunrisePercent <-0.01 or isMenu then
 				skylightIntensity = tempNight + diffNightDay * sunrisePercent
-				Brightness = -4 + 4*sunrisePercent
+				Brightness = MinBrightness + (MaxBrightness-MinBrightness)*sunrisePercent
 				else 
 				skylightIntensity=tempNight
-				Brightness=-4
+				Brightness=MinBrightness
 				end
 				sunrisePercentLast=sunrisePercent
 				--print(sunrisePercent)
@@ -182,10 +182,10 @@ local function doSkylightUpdate()
 				local sunsetPercent = (sunset - (sunSideAngle + sunAngleOffset)) / sunset
 				if sunsetPercentLast-sunsetPercent< 0 and 0-sunsetPercent <-0.01 or isMenu then
 				skylightIntensity = skylightIntensity - diffNightDay * sunsetPercent
-				Brightness= 0 - 4*sunsetPercent
+				Brightness= MaxBrightness - (MaxBrightness-MinBrightness)*sunsetPercent
 				else 
-				skylightIntensity=0
-				Brightness=-4
+				skylightIntensity=skylightIntensityNight
+				Brightness=MinBrightness
 				end
 				skylightIntensityLast=skylightIntensity
 				print(sunsetPercent)
@@ -193,7 +193,7 @@ local function doSkylightUpdate()
 				sunsetPercentLast=sunsetPercent
 			elseif isDay and not isInterior then
 				print("day")
-				Brightness=0
+				Brightness=MaxBrightness
 			--	if isInterior and not isDarkInterior then
 					skylightIntensity = skylightIntensity --+ interiorDayOffset
 				--end
@@ -201,7 +201,7 @@ local function doSkylightUpdate()
 				BrightnessLast=Brightness
 			elseif isNight or isInterior then
 				print("night")
-				Brightness=-4
+				Brightness=MinBrightness
 				skylightIntensity = tempNight
 			--isNight or isInterior then
 					uevr.api:execute_command("r.LightMaxDrawDistanceScale 20")
@@ -215,8 +215,8 @@ local function doSkylightUpdate()
 		
 			else
 				print("neither")
-				skylightIntensity = skylightIntensityLast
-				Brightness=BrightnessLast
+				skylightIntensity = currentSkylightIntensity/2
+				Brightness=(MaxBrightness+MinBrightness)/2
 			end
 			
 			 --;print(string.format("new skylight is %s", skylightIntensity))

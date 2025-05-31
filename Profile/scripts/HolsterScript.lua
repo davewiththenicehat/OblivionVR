@@ -2,6 +2,8 @@ require(".\\Trackers\\Trackers")
 require(".\\Config\\CONFIG")
 require(".\\Subsystems\\UEHelper")
 require(".\\libs\\zones")
+require(".\\Subsystems\\ControlInput")
+local utils=require(".\\libs\\uevr_utils")
 HolsterInit=true
 if TrackersInit and configInit then
 	print("Trackers  loaded")
@@ -81,6 +83,8 @@ function PositiveIntegerMask(text)
 end
 
 
+
+
 local rGrabActive =false
 local lGrabActive =false
 local LZone=0
@@ -144,7 +148,40 @@ local Quick6 = false
 local Quick7 = false
 local Quick8 = false
 local Quick9 = false
+local GUIState=true
 
+local isToggled =false	
+local function ToggleUI()
+	if not isToggled then
+		isToggled=true
+		
+		local CompassClass=  uevr.api:find_uobject("WidgetBlueprintGeneratedClass /Game/UI/Modern/HUD/Main/Compass/WBP_ModernHud_Compass.WBP_ModernHud_Compass_C")
+		local CompassComponent= UEVR_UObjectHook.get_objects_by_class(CompassClass,false)	
+		local HealthClass		=  uevr.api:find_uobject("WidgetBlueprintGeneratedClass /Game/UI/Modern/HUD/Main/WBP_ModernHud_Health.WBP_ModernHud_Health_C")
+		local HealthCOmponent	= UEVR_UObjectHook.get_objects_by_class(HealthClass,false)
+		local StaminaClass		=   uevr.api:find_uobject("WidgetBlueprintGeneratedClass /Game/UI/Modern/HUD/Main/WBP_ModernHud_Fatigue.WBP_ModernHud_Fatigue_C")
+		local StaminaComponent	= UEVR_UObjectHook.get_objects_by_class(StaminaClass,false)
+		local MagicClass=  uevr.api:find_uobject("WidgetBlueprintGeneratedClass /Game/UI/Modern/HUD/Main/WBP_ModernHud_MagicIcon.WBP_ModernHud_MagicIcon_C")
+		local MagicComponent= UEVR_UObjectHook.get_objects_by_class(MagicClass,false)
+		local WeaponClass= uevr.api:find_uobject("WidgetBlueprintGeneratedClass /Game/UI/Modern/HUD/Main/WBP_ModernHud_WeaponIcon.WBP_ModernHud_WeaponIcon_C")
+		local WeaponComponent= UEVR_UObjectHook.get_objects_by_class(WeaponClass,false) 
+		 if GUIState  then
+			CompassComponent[2]:SetVisibility(1)
+		--	HealthCOmponent[2]:SetVisibility(1)
+		--	StaminaComponent[3]:SetVisibility(1)
+			MagicComponent	[2]:SetVisibility(1)
+			WeaponComponent	[2]:SetVisibility(1)
+		 elseif GUIState == false then
+			CompassComponent[2]:SetVisibility(0)
+			MagicComponent  [2]:SetVisibility(0)
+		--	HealthCOmponent [2]:SetVisibility(0)
+		--	StaminaComponent[3]:SetVisibility(0)
+			WeaponComponent [2]:SetVisibility(0)
+		end
+		 GUIState=not GUIState
+--	print(HealthCOmponent[2]:get_full_name())
+	end
+end
 
 
 uevr.sdk.callbacks.on_xinput_get_state(
@@ -397,7 +434,8 @@ if isMenu== false  then
 			rGrabStart=true
 		end
 	else rGrabActive =false
-		rGrabStart=false		
+		rGrabStart=false	
+			
 	end
 	if lShoulder  then
 		lGrabActive =true
@@ -411,7 +449,9 @@ if isMenu== false  then
 		lGrabStart=false	
 	end
 	
-	
+	if not lShoulder and not rShoulder then
+		isToggled=false
+	end
 	
 	
 	pawn=api:get_local_pawn(0)
@@ -722,9 +762,9 @@ end
 	--	isHapticZoneR =false
 	--	RZone=2--Left Shoulder
 		
-	--elseif RCheckZone(0, 20, -5, 5, 0, 20+SeatedOffset)  then
-	--	isHapticZoneR= false
-	--	RZone=3-- Over Head
+	elseif RCheckZone(RHZoneHead)  then
+		isHapticZoneR= true
+		RZone=3-- Over Head
 		
 	elseif RCheckZone(RHZoneRHip) then				-- -100,-60,22,50,-10,10+SeatedOffset)   then
 		isHapticZoneR= true
@@ -766,9 +806,9 @@ end
 		isHapticZoneL =true
 		LZone=2--Left Shoulder
 		
-	--elseif LCheckZone(0, 30, -5, 5, 0, 20+SeatedOffset) then
-	--	isHapticZoneL= true
-	--	LZone=3-- Over Head
+	elseif LCheckZone(LHZoneHead) then
+		isHapticZoneL= true
+		LZone=3-- Over Head
 	--	
 	--elseif LCheckZone(-100,-50,-5,50,-10,30+SeatedOffset)  then
 	--	isHapticZoneL= true
@@ -907,16 +947,13 @@ end
 		elseif LZone==5 and lGrabActive  then
 			player:Quick6Input_Pressed()
 			Quick6=true
-		elseif RZone == 3 and rGrabActive and isRShoulderHeadR== false then
-			if string.sub(uevr.params.vr:get_mod_value("VR_AimMethod"),1,1) == "1" then
-				isRShoulderHeadR=true
-				--print(isRShoulder)
-			end
+		elseif RZone == 3 and rGrabActive  then
+			ToggleUI()
+			
 		elseif LZone ==3 and lGrabActive and isRShoulderHeadL==false then
-			if string.sub(uevr.params.vr:get_mod_value("VR_AimMethod"),1,1) == "1" then
-				isRShoulderHeadL=true
-				--print(isRShoulder)
-			end
+			
+			ToggleUI()
+			
 		elseif LZone==7 and lGrabActive   then
 			player:Quick5Input_Pressed()
 			Quick5=true
@@ -936,15 +973,13 @@ end
 			Key2=true
 			SendKeyDown('2')
 		elseif RZone == 3 and rGrabActive and isRShoulderHeadR== false then
-			if string.sub(uevr.params.vr:get_mod_value("VR_AimMethod"),1,1) == "1" then
-				isRShoulderHeadR=true
+			
 				--print(isRShoulder)
-			end
+			
 		elseif LZone ==3 and lGrabActive and isRShoulderHeadL==false then
-			if string.sub(uevr.params.vr:get_mod_value("VR_AimMethod"),1,1) == "1" then
-				isRShoulderHeadL=true
+		
 				--print(isRShoulder)
-			end
+			
 		elseif LZone== 8 and lGrabActive then
 			Key1=true
 			SendKeyDown('1')
@@ -1001,9 +1036,7 @@ end
 			SendKeyDown('B')
 			RTriggerWasPressed=1
 		elseif LWeaponZone ==3 and rThumbOut then
-			if string.sub(uevr.params.vr:get_mod_value("VR_AimMethod"),1,1) == "3" then
-				isRShoulder=true
-			end
+			
 		end
 	end
 --print(LWeaponZone)

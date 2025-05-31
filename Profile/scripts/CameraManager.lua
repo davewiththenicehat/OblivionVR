@@ -1,4 +1,4 @@
-require(".\\Subsystems\\Trackers")
+require(".\\Trackers\\Trackers")
 require(".\\Subsystems\\UEHelper")
 require(".\\Config\\CONFIG")
 local api = uevr.api
@@ -32,9 +32,16 @@ local LastState= isBow
 local ConditionChagned=false
 local isMenuEnter=false
 local YawLast=0
+
+local LeftRightScaleFactor		=0
+local ForwardBackwardScaleFactor=0
+	
+
+
+
 uevr.sdk.callbacks.on_pre_engine_tick(
 function(engine, delta)
-
+local pawn = api:get_local_pawn(0)
 if isMenu and isMenuEnter==false then
 	uevr.params.vr.set_mod_value("UI_FollowView", "false")
 	isMenuEnter=true
@@ -58,97 +65,128 @@ if not isRiding then
 	uevr.params.vr.set_mod_value("VR_RoomscaleMovement", "true")
 	if isBow then
 	
-	uevr.params.vr.set_mod_value("VR_MovementOrientation", "0")
-	
-	local pawn = api:get_local_pawn(0)
-	local player =api:get_player_controller(0)
-	local CameraManager=player.PlayerCameraManager
-	local CameraComp= CameraManager.ViewTarget.Target.CameraComponent
-	
-	
-	--print(isBow)
-	
-	-- Diff_Rotator_LR
-	if isBow and RTrigger ~= 0 then
+		uevr.params.vr.set_mod_value("VR_MovementOrientation", "0")
 		
-			AttackDelta=0
+		local pawn = api:get_local_pawn(0)
+		local player =api:get_player_controller(0)
+		local CameraManager=player.PlayerCameraManager
+		local CameraComp= CameraManager.ViewTarget.Target.CameraComponent
+		
+		
+		--print(isBow)
+		
+		-- Diff_Rotator_LR
+		if isBow and RTrigger ~= 0 then
 			
-		CamAngle=Diff_Rotator_LR
+				AttackDelta=0
+				
+			CamAngle=Diff_Rotator_LR_Arrow
+			
+			
+		end
+		if RTrigger ==0 and AttackDelta < 2 then
+			AttackDelta=AttackDelta+delta
+		end 
+		if isBow and RTrigger ==0 and AttackDelta> 1 then
+			CamAngle=RightRotator
+		elseif not isBow  and AttackDelta>1 then CamAngle=RightRotator
+		elseif AttackDelta <= 1 then CamAngle=Diff_Rotator_LR_Arrow
+		end
 		
-		
-	end
-	if RTrigger ==0 and AttackDelta < 2 then
-		AttackDelta=AttackDelta+delta
-	end 
-	if isBow and RTrigger ==0 and AttackDelta> 1 then
-		CamAngle=RightRotator
-	elseif not isBow  and AttackDelta>1 then CamAngle=RightRotator
-	elseif AttackDelta <= 1 then CamAngle=Diff_Rotator_LR
-	end
-	
-	local CamPitch=-CamAngle.x
-	local CamYaw=CamAngle.y+180
-	if not isBow then
-		CamYaw=CamAngle.y
-		CamPitch=CamAngle.x
-	end
-	if isBow and RTrigger == 0 and AttackDelta>1 then
-		CamYaw=CamAngle.y
-		CamPitch=CamAngle.x
-	elseif isBow and AttackDelta<=1 then 
-		CamPitch=-CamAngle.x
-		CamYaw=CamAngle.y+180
-	end
+		local CamPitch=-CamAngle.x
+		local CamYaw=CamAngle.y
+		if not isBow then
+			CamYaw=CamAngle.y
+			CamPitch=CamAngle.x
+		end
+		if isBow and RTrigger == 0 and AttackDelta>1 then
+			CamYaw=CamAngle.y
+			CamPitch=CamAngle.x
+		elseif isBow and AttackDelta<=1 then 
+			CamPitch=CamAngle.x
+			CamYaw=CamAngle.y
+		end
 	----pcall(function()
-	player:ClientSetRotation(Vector3f.new(CamPitch,CamYaw,0),true)
+	player:ClientSetRotation(Vector3f.new(CamPitch-7,CamYaw+2,0),true)
 	--end)
 	
+		
+		
+		
+		
+		HmdVector=hmd_component:GetForwardVector()
 		HandVector= right_hand_component:GetForwardVector()
-		HmdVector= hmd_component:GetForwardVector()
-		--VecAlpha = (HandVector.x - HmdVector.x, HandVector.y - HmdVector.y, HandVector.z - HmdVector.z)
-		local VecAlphaX= HandVector.x - HmdVector.x
-		local VecAlphaY= HandVector.y - HmdVector.y
-		local Alpha1
-		local Alpha2
-		if HandVector.x >=0 and HandVector.y>=0 then	
-		Alpha1 =math.pi/2-math.asin( HandVector.x/ math.sqrt(HandVector.y^2+HandVector.x^2))
-		--print("Quad1")
-		elseif HandVector.x <0 and HandVector.y>=0 then
-		--print("Quad2")
-		Alpha1 =math.pi/2-math.asin( HandVector.x/ math.sqrt(HandVector.y^2+HandVector.x^2))
-		elseif HandVector.x <0 and HandVector.y<0 then
-		--print("Quad3")
-		Alpha1 =math.pi+math.pi/2+math.asin( HandVector.x/ math.sqrt(HandVector.y^2+HandVector.x^2))
-		elseif HandVector.x >=0 and HandVector.y<0 then
-		--print("Quad4")
-		Alpha1 =3/2*math.pi+math.asin( HandVector.x/ math.sqrt(HandVector.y^2+HandVector.x^2))
-		end
 		
-		if HmdVector.x >=0 and HmdVector.y>=0 then	
-		Alpha2 =math.pi/2-math.asin( HmdVector.x/ math.sqrt(HmdVector.y^2+HmdVector.x^2))
-		--print("Quad1")
-		elseif HmdVector.x <0 and HmdVector.y>=0 then
-		--print("Quad2")
-		Alpha2 =math.pi/2-math.asin( HmdVector.x/ math.sqrt(HmdVector.y^2+HmdVector.x^2))
-		elseif HmdVector.x <0 and HmdVector.y<0 then
-		--print("Quad3")
-		Alpha2 =math.pi+math.pi/2+math.asin( HmdVector.x/ math.sqrt(HmdVector.y^2+HmdVector.x^2))
-		elseif HmdVector.x >=0 and HmdVector.y<0 then
-		--print("Quad4")
-		Alpha2 =3/2*math.pi+math.asin( HmdVector.x/ math.sqrt(HmdVector.y^2+HmdVector.x^2))
-		end
+	--	VecAlpha = (HandVector.x - HmdVector.x, HandVector.y - HmdVector.y, HandVector.z - HmdVector.z)
+							local VecAlphaX= HandVector.x - HmdVector.x
+							local VecAlphaY= HandVector.y - HmdVector.y
+							local Alpha1
+							local Alpha2
+							if HandVector.x >=0 and HandVector.y>=0 then	
+							Alpha1 =math.pi/2-math.asin( HandVector.x/ math.sqrt(HandVector.y^2+HandVector.x^2))
+							--print("Quad1")
+							elseif HandVector.x <0 and HandVector.y>=0 then
+							--print("Quad2")
+							Alpha1 =math.pi/2-math.asin( HandVector.x/ math.sqrt(HandVector.y^2+HandVector.x^2))
+							elseif HandVector.x <0 and HandVector.y<0 then
+							--print("Quad3")
+							Alpha1 =math.pi+math.pi/2+math.asin( HandVector.x/ math.sqrt(HandVector.y^2+HandVector.x^2))
+							elseif HandVector.x >=0 and HandVector.y<0 then
+							--print("Quad4")
+							Alpha1 =3/2*math.pi+math.asin( HandVector.x/ math.sqrt(HandVector.y^2+HandVector.x^2))
+							end
+							
+							if HmdVector.x >=0 and HmdVector.y>=0 then	
+							Alpha2 =math.pi/2-math.asin( HmdVector.x/ math.sqrt(HmdVector.y^2+HmdVector.x^2))
+							--print("Quad1")
+							elseif HmdVector.x <0 and HmdVector.y>=0 then
+							--print("Quad2")
+							Alpha2 =math.pi/2-math.asin( HmdVector.x/ math.sqrt(HmdVector.y^2+HmdVector.x^2))
+							elseif HmdVector.x <0 and HmdVector.y<0 then
+							--print("Quad3")
+							Alpha2 =math.pi+math.pi/2+math.asin( HmdVector.x/ math.sqrt(HmdVector.y^2+HmdVector.x^2))
+							elseif HmdVector.x >=0 and HmdVector.y<0 then
+							--print("Quad4")
+							Alpha2 =3/2*math.pi+math.asin( HmdVector.x/ math.sqrt(HmdVector.y^2+HmdVector.x^2))
+							end
+							
+							
+							AlphaDiff= Alpha2-Alpha1
+							if isBow and RTrigger ~= 0 then
+								AlphaDiff=AlphaDiff-math.pi*20/180
+							end
 		
 		
-		AlphaDiff= Alpha2-Alpha1
-		if isBow and RTrigger ~= 0 then
-			AlphaDiff=AlphaDiff-math.pi*20/180
-		end
+		
 	elseif HeadBasedMovement then uevr.params.vr.set_mod_value("VR_MovementOrientation", "1")
 	elseif HeadBasedMovement==false then uevr.params.vr.set_mod_value("VR_MovementOrientation", "2")
 	end
+	
+	
+			
+	if not isSprinting then
+		LeftRightScaleFactor= ThumbLX/32767		
+		ForwardBackwardScaleFactor = ThumbLY/32767
+		if HeadBasedMovement then
+			--HandVector= right_hand_component:GetForwardVector()
+			hmd_component:GetForwardVector()
+							
+			pawn:AddMovementInput(hmd_component:GetForwardVector(),ForwardBackwardScaleFactor,true)
+			pawn:AddMovementInput(hmd_component:GetRightVector(),LeftRightScaleFactor,true)
+			uevr.params.vr.set_mod_value("VR_MovementOrientation", "0")
+		elseif not HeadBasedMovement then
+			--HandVector= right_hand_component:GetForwardVector()
+			right_hand_component:GetForwardVector()
+								
+			pawn:AddMovementInput(right_hand_component:GetForwardVector(),ForwardBackwardScaleFactor,true)
+			pawn:AddMovementInput(right_hand_component:GetRightVector(),LeftRightScaleFactor,true)
+			uevr.params.vr.set_mod_value("VR_MovementOrientation", "0")
+		end
+	end
+	
 else uevr.params.vr.set_mod_value("VR_MovementOrientation", "0")
-uevr.params.vr.set_mod_value("VR_RoomscaleMovement", "false")
- end
+	uevr.params.vr.set_mod_value("VR_RoomscaleMovement", "false")
+end
 
 if LastState == not isBow then
 	LastState=isBow
@@ -169,11 +207,17 @@ function(retval, user_index, state)
 if isBow  then
 
 --Read Gamepad stick input for rotation compensation
-if HeadBasedMovement then
-	state.Gamepad.sThumbLX= ThumbLX*math.cos(-AlphaDiff)- ThumbLY*math.sin(-AlphaDiff)
-			
-	state.Gamepad.sThumbLY= math.sin(-AlphaDiff)*ThumbLX + ThumbLY*math.cos(-AlphaDiff)
-end
+	if HeadBasedMovement   then
+	
+	
+	
+	
+	
+		state.Gamepad.sThumbLX= ThumbLX*math.cos(-AlphaDiff)- ThumbLY*math.sin(-AlphaDiff)
+				
+		state.Gamepad.sThumbLY= math.sin(-AlphaDiff)*ThumbLX + ThumbLY*math.cos(-AlphaDiff)
+		
+	end
 
 
 
@@ -244,14 +288,14 @@ uevr.sdk.callbacks.on_post_calculate_stereo_view_offset(function(device, view_in
 	--print(DecoupledYawCurrentRot)
 local pawn=api:get_local_pawn(0)
 if isRiding and FirstPersonRiding then
-	pawn.Rider.Mesh:SetVisibility(false,true)
+	--pawn.Rider.Mesh:SetVisibility(false,true)
 	
-	NewLoc=pawn.Rider.HeadwearChildActorComponent.ChildActor.RootComponent:K2_GetComponentLocation()
+	NewLoc=pawn.Rider.MainSkeletalMeshComponent:GetSocketLocation("Head_Socket")
 	--pawn:GetForwardVector()
 --	NewRot=pawn:GetActorRotation()
-	position.x=NewLoc.x --+pawn.Mesh:GetForwardVector().x*10
-	position.y=NewLoc.y --pawn.Mesh:GetForwardVector().y*10
-	position.z=NewLoc.z +140
+	position.x=NewLoc.x +pawn.Mesh:GetRightVector().x*10
+	position.y=NewLoc.y +pawn.Mesh:GetRightVector().y*10
+	position.z=NewLoc.z +10
 	--rotation=NewRot
 else
 	--pawn.Mesh:SetVisibility(false,true)
