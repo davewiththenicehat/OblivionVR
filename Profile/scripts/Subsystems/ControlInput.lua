@@ -1,8 +1,7 @@
 require(".\\Subsystems\\UEHelper")
+QuickMenu=false --needs to be global so other scripts like RadialQuickMenu can access state
 local api = uevr.api
-local QuickMenu=false
 local BbuttonNotPressedAfterMenu=false
- 
 local SprintState=false
 
 uevr.sdk.callbacks.on_xinput_get_state(
@@ -57,9 +56,9 @@ if isMenu==false then
 	end
 else BbuttonNotPressedAfterMenu=false end
 
-
-if not isMenu then
-	if not isSprinting  then
+--Do not take over stick if riding, otherwise cannot move horse
+if not isMenu and not isRiding then
+	if not isSprinting then
 		state.Gamepad.sThumbLX=0
 		state.Gamepad.sThumbLY=0
 
