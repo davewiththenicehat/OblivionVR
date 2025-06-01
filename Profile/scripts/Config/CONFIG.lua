@@ -34,7 +34,8 @@ config_table = {
     Melee_Power = 700,
 	ReticleAlwaysOn =true,
 	UI_Follows_View =true,
-	DarkerDarks=false
+	DarkerDarks=false,
+	RadialQuickMenu=true,
 	--HandIndex=2
 	--isRhand = true	
 }
@@ -75,6 +76,7 @@ MeleePower = config_table.Melee_Power
 ReticleAlwaysOn = config_table.ReticleAlwaysOn
 UIFollowsView = config_table.UI_Follows_View
 DarkerDarks=config_table.DarkerDarks
+RadialQuickMenu=config_table.RadialQuickMenu
 --isRhand = config_table.isRhand
 
 
@@ -169,7 +171,8 @@ uevr.sdk.callbacks.on_draw_ui(function()
 
     imgui.text("Features")
 	
-	UIFollowsView = create_checkbox("UI Follows View", "UI Follows View")
+	UIFollowsView = create_checkbox("UI Follows View", "UI_Follows_View")
+	RadialQuickMenu = create_checkbox("Motion Controlled Radial Quick Menu", "RadialQuickMenu")
     Enable_Lumen_Indoors = create_checkbox("Enable Lumen Indoors", "Enable_Lumen_Indoors")
     Faster_Projectiles = create_checkbox("Faster Projectiles", "Faster_Projectiles")
 	--ReticleAlwaysOn = create_checkbox("Reticle Always On", "Reticle Always On")
