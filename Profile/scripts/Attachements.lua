@@ -73,7 +73,7 @@ local Offset=0
 local HmdRotatorYLast=0
 local function GetHmdYawOffset()
 	if HmdRotator==nil then return end
-	print(HmdRotator.y)
+	--print(HmdRotator.y)
 	
 	
 	local deltaOffset= 0
@@ -98,7 +98,7 @@ local function GetHmdYawOffset()
 	local YawOffset= Offset/180*math.pi
 	
 	HmdRotatorYLast=HmdRotator.y
-	print(Offset)
+	--print(Offset)
 	--print(YawOffset)
 	return YawOffset
 end

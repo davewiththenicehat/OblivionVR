@@ -1,6 +1,7 @@
 require(".\\Trackers\\Trackers")
 require(".\\Subsystems\\UEHelper")
 require(".\\Config\\CONFIG")
+require(".\\Subsystems\\ControlInput")
 local api = uevr.api
 local params = uevr.params
 local callbacks = params.sdk.callbacks
@@ -35,8 +36,7 @@ local YawLast=0
 
 local LeftRightScaleFactor		=0
 local ForwardBackwardScaleFactor=0
-	
-
+local IsRecentered=false
 
 
 uevr.sdk.callbacks.on_pre_engine_tick(
@@ -107,7 +107,9 @@ if not isRiding then
 			CamYaw=CamAngle.y
 		end
 	----pcall(function()
-	player:ClientSetRotation(Vector3f.new(CamPitch-7,CamYaw+2,0),true)
+	if not QuickMenu then
+		player:ClientSetRotation(Vector3f.new(CamPitch-7,CamYaw+2,0),true)
+	end
 	--end)
 	
 		
@@ -183,8 +185,12 @@ if not isRiding then
 			uevr.params.vr.set_mod_value("VR_MovementOrientation", "0")
 		end
 	end
-	
+	IsRecentered=false
 else uevr.params.vr.set_mod_value("VR_MovementOrientation", "0")
+	if not IsRecentered then
+		vr:recenter_view()
+		IsRecentered=true
+	end
 	uevr.params.vr.set_mod_value("VR_RoomscaleMovement", "false")
 end
 

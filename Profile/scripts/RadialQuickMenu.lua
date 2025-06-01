@@ -123,7 +123,7 @@ end
 
 --if QuickMenu==true and not isBow and uevr.params.vr:get_mod_value("UI_FollowView") then
 --If not holding the bow and quickmenu is open, use hand motion to simulate right stick input to rotate the selector
-if QuickMenu==true and not isBow and RadialQuickMenu then
+if QuickMenu==true  and RadialQuickMenu then
 	if state ~= nil then
 		state.Gamepad.sThumbRX = QuickMenuSimulatedStickX
 		state.Gamepad.sThumbRY = QuickMenuSimulatedStickY
