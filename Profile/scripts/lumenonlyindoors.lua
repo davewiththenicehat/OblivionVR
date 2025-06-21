@@ -105,9 +105,12 @@ end
 -- @param locals A table containing the function's local variables.
 -- @param result The original return value of the function (not used here).
 local function FadeToGameBegin(fn, obj, locals, result)
+    
     -- Only proceed if Lumen indoors is enabled in the configuration.
     if not Enable_Lumen_Indoors then return end
-    print("LumensOnlyIndoors.lua: Fade to game\n")
+
+    print("LumensOnlyIndoors.lua: Fade to game initiated (Level changed)\n")
+
     -- Get the first GameEngine object instance.
     local game_engine = UEVR_UObjectHook.get_first_object_by_class(game_engine_class)
 
@@ -119,7 +122,6 @@ local function FadeToGameBegin(fn, obj, locals, result)
     end
     -- Get the World from the Viewport.
     local world = viewport.World
-
     if world == nil then
         print("LumensOnlyIndoors.lua: World is nil")
         return
@@ -129,20 +131,23 @@ local function FadeToGameBegin(fn, obj, locals, result)
     local WorldName = world:get_full_name()
 
     -- Check if the world name contains "World/", which typically indicates an exterior map.
-    if not WorldName:find("World/") then
+    if WorldName:find("World/") then
+        print("LumensOnlyIndoors.lua: Exterior, disabling lumen.")
+        -- Set r.DynamicGlobalIlluminationMethod to 0 (disables DGI).
+        set_cvar_int("r.DynamicGlobalIlluminationMethod", 0)
+        -- Set r.Lumen.DiffuseIndirect.Allow to 0 (disables Lumen diffuse indirect lighting).
+        set_cvar_int("r.Lumen.DiffuseIndirect.Allow", 0)
+    else
         print("LumensOnlyIndoors.lua: Interior, enabling lumen")
         -- If it's an interior, enable Lumen.
         set_cvar_int("r.DynamicGlobalIlluminationMethod", 1)
         set_cvar_int("r.Lumen.DiffuseIndirect.Allow", 1)
-    else
-        print("LumensOnlyIndoors.lua: Exterior, leaving lumen disabled.")
-        -- If it's an exterior, leave Lumen disabled (as it was set in FadeToBlackBegin).
     end
 end
 
 -- Hook the "OnFadeToBlackBeginEventReceived" function in "VLevelChangeData" class.
 -- This hook triggers the FadeToBlackBegin function when a fade to black event occurs.
-hook_function("Class /Script/Altar.VLevelChangeData", "OnFadeToBlackBeginEventReceived", false, nil, FadeToBlackBegin, false)
+hook_function("Class /Script/Altar.VLevelChangeData", "OnFadeToBlackBeginEventReceived", false, nil, FadeToBlackBegin, true)
 -- Hook the "OnFadeToGameBeginEventReceived" function in "VLevelChangeData" class.
 -- This hook triggers the FadeToGameBegin function when a fade to game event occurs.
-hook_function("Class /Script/Altar.VLevelChangeData", "OnFadeToGameBeginEventReceived", false, nil, FadeToGameBegin, false)
+hook_function("Class /Script/Altar.VLevelChangeData", "OnFadeToGameBeginEventReceived", false, nil, FadeToGameBegin, true)
