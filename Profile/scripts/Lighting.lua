@@ -233,6 +233,12 @@ end
 -- Callback function executed before each engine tick.
 uevr.sdk.callbacks.on_pre_engine_tick(
     function(engine, delta)
+
+		--Skip lighting management if user specified to skip.
+		if not ManageLighting then
+			return
+		end
+
         -- Only apply lighting adjustments if the 'DarkerDarks' setting is enabled.
         if DarkerDarks then
             doSkylightUpdate() -- Call the function to update skylight and brightness.
