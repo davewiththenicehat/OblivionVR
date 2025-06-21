@@ -1,126 +1,175 @@
+-- Require the configuration file for global settings.
 require(".\\Config\\CONFIG")
+
 ------------------------------------------------------------------------------------
 -- Helper section
 ------------------------------------------------------------------------------------
+-- Alias for the UEVR API, providing access to various engine functionalities.
 local api = uevr.api
+-- Alias for UEVR VR parameters, likely containing VR-specific settings.
 local vr = uevr.params.vr
 
+--- Sets an integer value for a console variable (cvar).
+-- @param cvar The name of the console variable as a string.
+-- @param value The integer value to set.
 function set_cvar_int(cvar, value)
+    -- Get the console manager from the UEVR API.
     local console_manager = api:get_console_manager()
-    
+
+    -- Find the console variable by its name.
     local var = console_manager:find_variable(cvar)
+    -- If the variable is found, set its integer value.
     if(var ~= nil) then
         var:set_int(value)
     end
 end
 
 -------------------------------------------------------------------------------
--- xinput helpers
+-- XInput Helpers
+-- These functions assist in managing XInput gamepad button states.
 -------------------------------------------------------------------------------
+
+--- Checks if a specific button is pressed in the gamepad state.
+-- @param state The gamepad state object (e.g., from XInput).
+-- @param button The button flag to check against (e.g., XINPUT_GAMEPAD_A).
+-- @return True if the button is pressed, false otherwise.
 function is_button_pressed(state, button)
     return state.Gamepad.wButtons & button ~= 0
 end
+
+--- Sets a specific button as pressed in the gamepad state.
+-- @param state The gamepad state object.
+-- @param button The button flag to set.
 function press_button(state, button)
     state.Gamepad.wButtons = state.Gamepad.wButtons | button
 end
+
+--- Clears a specific button's pressed state in the gamepad state.
+-- @param state The gamepad state object.
+-- @param button The button flag to clear.
 function clear_button(state, button)
     state.Gamepad.wButtons = state.Gamepad.wButtons & ~(button)
 end
 
 -------------------------------------------------------------------------------
 -- hook_function
+-- Hooks a UEVR function to inject custom logic before or after its execution.
 --
--- Hooks a UEVR function. 
---
--- class_name = the class to find, such as "Class /Script.GunfireRuntime.RangedWeapon"
--- function_name = the function to Hook
--- native = true or false whether or not to set the native function flag.
--- prefn = the function to run if you hook pre. Pass nil to not use
--- postfn = the function to run if you hook post. Pass nil to not use.
--- dbgout = true to print the debug outputs, false to not
+-- @param class_name The name of the class containing the function, e.g., "Class /Script.GunfireRuntime.RangedWeapon".
+-- @param function_name The name of the function to hook.
+-- @param native True if the function is a native (C++) function, false otherwise.
+-- @param prefn The function to run *before* the original function. Pass nil to not use.
+-- @param postfn The function to run *after* the original function. Pass nil to not use.
+-- @param dbgout True to print debug outputs, false to suppress them.
 --
 -- Example:
---    hook_function("Class /Script/GunfireRuntime.RangedWeapon", "OnFireBegin", true, nil, gun_firingbegin_hook, true)
+--     hook_function("Class /Script/GunfireRuntime.RangedWeapon", "OnFireBegin", true, nil, gun_firingbegin_hook, true)
 --
--- Returns: true on success, false on failure.
+-- @return True on success, false on failure.
 -------------------------------------------------------------------------------
 local function hook_function(class_name, function_name, native, prefn, postfn, dbgout)
-	if(dbgout) then print("Hook_function for ", class_name, function_name) end
+    -- Print debug message if dbgout is true.
+    if(dbgout) then print("Hook_function for ", class_name, function_name) end
     local result = false
+    -- Find the UObject class by its name.
     local class_obj = uevr.api:find_uobject(class_name)
+    -- If the class object is found.
     if(class_obj ~= nil) then
         if dbgout then print("hook_function: found class obj for", class_name) end
+        -- Find the specific function within the class.
         local class_fn = class_obj:find_function(function_name)
-        if(class_fn ~= nil) then 
+        -- If the function is found.
+        if(class_fn ~= nil) then
             if dbgout then print("hook_function: found function", function_name, "for", class_name) end
+            -- If the function is native, set the native function flag (0x400).
             if (native == true) then
                 class_fn:set_function_flags(class_fn:get_function_flags() | 0x400)
                 if dbgout then print("hook_function: set native flag") end
             end
-            
+
+            -- Apply the pre and post hooks to the function pointer.
             class_fn:hook_ptr(prefn, postfn)
             result = true
             if dbgout then print("hook_function: set function hook for", prefn, "and", postfn) end
         end
     end
-    
+
     return result
 end
 
-
 -------------------------------------------------------------------------------
--- Logs to the log.txt
+-- Logs to the log.txt file.
+--
+-- @param message The string message to log.
 -------------------------------------------------------------------------------
 local function log_info(message)
-	uevr.params.functions.log_info(message)
+    uevr.params.functions.log_info(message)
 end
 
-
+-- Find the GameEngine class object.
 local game_engine_class = api:find_uobject("Class /Script/Engine.GameEngine")
 
-
--- runs on level change begin
+--- Callback function that runs when a level change begins (fades to black).
+-- This function disables Lumen global illumination.
+-- @param fn The function object being hooked.
+-- @param obj The object instance the function belongs to.
+-- @param locals A table containing the function's local variables.
+-- @param result The original return value of the function (not used here).
 local function FadeToBlackBegin(fn, obj, locals, result)
+    -- Only proceed if Lumen indoors is enabled in the configuration.
     if not Enable_Lumen_Indoors then return end
     print("level change begin, disabling lumen\n")
+    -- Set r.DynamicGlobalIlluminationMethod to 0 (disables DGI).
     set_cvar_int("r.DynamicGlobalIlluminationMethod", 0)
+    -- Set r.Lumen.DiffuseIndirect.Allow to 0 (disables Lumen diffuse indirect lighting).
     set_cvar_int("r.Lumen.DiffuseIndirect.Allow", 0)
 end
 
--- runs on game level load
+--- Callback function that runs when fading back into the game (level load complete).
+-- This function checks if the current world is an interior or exterior and adjusts Lumen settings accordingly.
+-- @param fn The function object being hooked.
+-- @param obj The object instance the function belongs to.
+-- @param locals A table containing the function's local variables.
+-- @param result The original return value of the function (not used here).
 local function FadeToGameBegin(fn, obj, locals, result)
+    -- Only proceed if Lumen indoors is enabled in the configuration.
     if not Enable_Lumen_Indoors then return end
     print("Fade to game\n")
+    -- Get the first GameEngine object instance.
     local game_engine = UEVR_UObjectHook.get_first_object_by_class(game_engine_class)
 
+    -- Get the GameViewport from the GameEngine.
     local viewport = game_engine.GameViewport
-    if viewport == nil then 
-		print("Viewport is nil")
+    if viewport == nil then
+        print("Viewport is nil")
         return
     end
+    -- Get the World from the Viewport.
     local world = viewport.World
-    
+
     if world == nil then
         print("World is nil")
         return
     end
-    
-    
-    
+
+    -- Get the full name of the current world.
     local WorldName = world:get_full_name()
-    
+
+    -- Check if the world name contains "World/", which typically indicates an exterior map.
     if not WorldName:find("World/") then
         print("Interior, enabling lumen")
+        -- If it's an interior, enable Lumen.
         set_cvar_int("r.DynamicGlobalIlluminationMethod", 1)
         set_cvar_int("r.Lumen.DiffuseIndirect.Allow", 1)
     else
-        print("Exterior, leaving luemn disabled.")
+        print("Exterior, leaving lumen disabled.")
+        -- If it's an exterior, leave Lumen disabled (as it was set in FadeToBlackBegin).
     end
 end
 
-
+-- Hook the "OnFadeToBlackBeginEventReceived" function in "VLevelChangeData" class.
+-- This hook triggers the FadeToBlackBegin function when a fade to black event occurs.
 hook_function("Class /Script/Altar.VLevelChangeData", "OnFadeToBlackBeginEventReceived", false, nil, FadeToBlackBegin, false)
+-- Hook the "OnFadeToGameBeginEventReceived" function in "VLevelChangeData" class.
+-- This hook triggers the FadeToGameBegin function when a fade to game event occurs.
 hook_function("Class /Script/Altar.VLevelChangeData", "OnFadeToGameBeginEventReceived", false, nil, FadeToGameBegin, false)
-
-
-
