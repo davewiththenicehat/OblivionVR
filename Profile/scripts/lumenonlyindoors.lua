@@ -42,28 +42,28 @@ end
 -------------------------------------------------------------------------------
 local function hook_function(class_name, function_name, native, prefn, postfn, dbgout)
     -- Print debug message if dbgout is true.
-    if(dbgout) then print("Hook_function for ", class_name, function_name) end
+    if(dbgout) then print("LumensOnlyIndoors.lua: LumensOnlyIndoors.lua: Hook_function for ", class_name, function_name) end
     local result = false
     -- Find the UObject class by its name.
     local class_obj = uevr.api:find_uobject(class_name)
     -- If the class object is found.
     if(class_obj ~= nil) then
-        if dbgout then print("hook_function: found class obj for", class_name) end
+        if dbgout then print("LumensOnlyIndoors.lua: hook_function: found class obj for", class_name) end
         -- Find the specific function within the class.
         local class_fn = class_obj:find_function(function_name)
         -- If the function is found.
         if(class_fn ~= nil) then
-            if dbgout then print("hook_function: found function", function_name, "for", class_name) end
+            if dbgout then print("LumensOnlyIndoors.lua: hook_function: found function", function_name, "for", class_name) end
             -- If the function is native, set the native function flag (0x400).
             if (native == true) then
                 class_fn:set_function_flags(class_fn:get_function_flags() | 0x400)
-                if dbgout then print("hook_function: set native flag") end
+                if dbgout then print("LumensOnlyIndoors.lua: hook_function: set native flag") end
             end
 
             -- Apply the pre and post hooks to the function pointer.
             class_fn:hook_ptr(prefn, postfn)
             result = true
-            if dbgout then print("hook_function: set function hook for", prefn, "and", postfn) end
+            if dbgout then print("LumensOnlyIndoors.lua: hook_function: set function hook for", prefn, "and", postfn) end
         end
     end
 
@@ -91,7 +91,7 @@ local game_engine_class = api:find_uobject("Class /Script/Engine.GameEngine")
 local function FadeToBlackBegin(fn, obj, locals, result)
     -- Only proceed if Lumen indoors is enabled in the configuration.
     if not Enable_Lumen_Indoors then return end
-    print("level change begin, disabling lumen\n")
+    print("LumensOnlyIndoors.lua: level change begin, disabling lumen\n")
     -- Set r.DynamicGlobalIlluminationMethod to 0 (disables DGI).
     set_cvar_int("r.DynamicGlobalIlluminationMethod", 0)
     -- Set r.Lumen.DiffuseIndirect.Allow to 0 (disables Lumen diffuse indirect lighting).
@@ -107,21 +107,21 @@ end
 local function FadeToGameBegin(fn, obj, locals, result)
     -- Only proceed if Lumen indoors is enabled in the configuration.
     if not Enable_Lumen_Indoors then return end
-    print("Fade to game\n")
+    print("LumensOnlyIndoors.lua: Fade to game\n")
     -- Get the first GameEngine object instance.
     local game_engine = UEVR_UObjectHook.get_first_object_by_class(game_engine_class)
 
     -- Get the GameViewport from the GameEngine.
     local viewport = game_engine.GameViewport
     if viewport == nil then
-        print("Viewport is nil")
+        print("LumensOnlyIndoors.lua: Viewport is nil")
         return
     end
     -- Get the World from the Viewport.
     local world = viewport.World
 
     if world == nil then
-        print("World is nil")
+        print("LumensOnlyIndoors.lua: World is nil")
         return
     end
 
@@ -130,12 +130,12 @@ local function FadeToGameBegin(fn, obj, locals, result)
 
     -- Check if the world name contains "World/", which typically indicates an exterior map.
     if not WorldName:find("World/") then
-        print("Interior, enabling lumen")
+        print("LumensOnlyIndoors.lua: Interior, enabling lumen")
         -- If it's an interior, enable Lumen.
         set_cvar_int("r.DynamicGlobalIlluminationMethod", 1)
         set_cvar_int("r.Lumen.DiffuseIndirect.Allow", 1)
     else
-        print("Exterior, leaving lumen disabled.")
+        print("LumensOnlyIndoors.lua: Exterior, leaving lumen disabled.")
         -- If it's an exterior, leave Lumen disabled (as it was set in FadeToBlackBegin).
     end
 end
