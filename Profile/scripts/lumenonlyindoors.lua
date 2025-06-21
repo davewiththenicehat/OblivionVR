@@ -82,22 +82,6 @@ end
 -- Find the GameEngine class object.
 local game_engine_class = api:find_uobject("Class /Script/Engine.GameEngine")
 
---- Callback function that runs when a level change begins (fades to black).
--- This function disables Lumen global illumination.
--- @param fn The function object being hooked.
--- @param obj The object instance the function belongs to.
--- @param locals A table containing the function's local variables.
--- @param result The original return value of the function (not used here).
-local function FadeToBlackBegin(fn, obj, locals, result)
-    -- Only proceed if Lumen indoors is enabled in the configuration.
-    if not Enable_Lumen_Indoors then return end
-    print("LumensOnlyIndoors.lua: level change begin, disabling lumen\n")
-    -- Set r.DynamicGlobalIlluminationMethod to 0 (disables DGI).
-    set_cvar_int("r.DynamicGlobalIlluminationMethod", 0)
-    -- Set r.Lumen.DiffuseIndirect.Allow to 0 (disables Lumen diffuse indirect lighting).
-    set_cvar_int("r.Lumen.DiffuseIndirect.Allow", 0)
-end
-
 --- Callback function that runs when fading back into the game (level load complete).
 -- This function checks if the current world is an interior or exterior and adjusts Lumen settings accordingly.
 -- @param fn The function object being hooked.
@@ -109,7 +93,7 @@ local function FadeToGameBegin(fn, obj, locals, result)
     -- Only proceed if Lumen indoors is enabled in the configuration.
     if not Enable_Lumen_Indoors then return end
 
-    print("LumensOnlyIndoors.lua: Fade to game initiated (Level changed)\n")
+    print("LumensOnlyIndoors.lua: Fade to game initiated (Level changed)")
 
     -- Get the first GameEngine object instance.
     local game_engine = UEVR_UObjectHook.get_first_object_by_class(game_engine_class)
@@ -145,9 +129,6 @@ local function FadeToGameBegin(fn, obj, locals, result)
     end
 end
 
--- Hook the "OnFadeToBlackBeginEventReceived" function in "VLevelChangeData" class.
--- This hook triggers the FadeToBlackBegin function when a fade to black event occurs.
-hook_function("Class /Script/Altar.VLevelChangeData", "OnFadeToBlackBeginEventReceived", false, nil, FadeToBlackBegin, true)
 -- Hook the "OnFadeToGameBeginEventReceived" function in "VLevelChangeData" class.
 -- This hook triggers the FadeToGameBegin function when a fade to game event occurs.
 hook_function("Class /Script/Altar.VLevelChangeData", "OnFadeToGameBeginEventReceived", false, nil, FadeToGameBegin, true)
