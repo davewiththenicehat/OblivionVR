@@ -571,8 +571,8 @@ function(engine, delta)
 	if not EnableHolster then
 		
 		-- If holster haptic feedback is enabled, disable it.
-		if HapticFeedback then
-			HapticFeedback = false
+		if HolsterHapticFeedback then
+			HolsterHapticFeedback = false
 			config_table.Holster_Haptic_Feedback = false
 		end
 
@@ -661,8 +661,8 @@ function(engine, delta)
     RHandWeaponZ = RHandWeaponX * math.sin(-RotWeaponLY / 180 * math.pi) + RHandWeaponZ * math.cos(-RotWeaponLY / 180 * math.pi)
 
     -- Haptic feedback for entering and leaving defined zones.
-    -- 'HapticFeedback' is a boolean preference from CONFIG.lua.
-    if HapticFeedback then
+    -- 'HolsterHapticFeedback' is a boolean preference from CONFIG.lua.
+    if HolsterHapticFeedback then
         -- Right Hand general zone haptics.
         if isHapticZoneRLast ~= isHapticZoneR then
             uevr.params.vr.trigger_haptic_vibration(0.0, 0.1, 1.0, 100.0, RightController)
