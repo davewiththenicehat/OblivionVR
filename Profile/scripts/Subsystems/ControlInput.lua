@@ -1,6 +1,50 @@
 -- Require the UEHelper subsystem, which provides utility functions for interacting with Unreal Engine objects and XInput.
 require(".\\Subsystems\\UEHelper")
 
+--[[
+	Default UEVR control mapping
+		
+		Dpad left  -> up.....move forward
+		Dpad left  -> down...move backward
+		Dpad left  -> right..strafe right
+		Dpad left  -> left...strafe left
+		Dpad left  -> press..sprint
+		Dpad right -> up.....camera tilt up
+		Dpad right -> down...camera tilt down
+		Dpad right -> right..character turn right
+		Dpad right -> left...character turn left
+		Dpad right -> press..Change view (first or third person)
+
+		y, jump
+		x, crouch
+		b, stow weapon
+		a, activate (like pick things up or open doors)
+
+		left grip, weapon quick menu
+		right grip, cast spell
+		left tripper, block
+		right trigger, attack
+
+	Button mapping inherited from Subsystems\UEHelper.lua
+		Function UpdateInput updates these mappings each uevr.sdk.callbacks.on_xinput_get_state call
+
+		ThumbLX = state.Gamepad.sThumbLX
+		ThumbLY = state.Gamepad.sThumbLY
+		ThumbRX = state.Gamepad.sThumbRX
+		ThumbRY = state.Gamepad.sThumbRY
+		LTrigger= state.Gamepad.bLeftTrigger
+		RTrigger= state.Gamepad.bRightTrigger
+		rShoulder= isButtonPressed(state, XINPUT_GAMEPAD_RIGHT_SHOULDER)
+		lShoulder= isButtonPressed(state, XINPUT_GAMEPAD_LEFT_SHOULDER)
+		lThumb   = isButtonPressed(state, XINPUT_GAMEPAD_LEFT_THUMB)
+		rThumb   = isButtonPressed(state, XINPUT_GAMEPAD_RIGHT_THUMB)
+		Abutton  = isButtonPressed(state, XINPUT_GAMEPAD_A)
+		Bbutton  = isButtonPressed(state, XINPUT_GAMEPAD_B)
+		Xbutton  = isButtonPressed(state, XINPUT_GAMEPAD_X)
+		Ybutton  = isButtonPressed(state, XINPUT_GAMEPAD_Y)
+
+]]
+
 -- Global variable to track the state of the Quick Menu. This needs to be global so other scripts (like RadialQuickMenu) can access its state.
 QuickMenu = false 
 
