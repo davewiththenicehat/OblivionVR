@@ -198,12 +198,6 @@ local function SendKeyUp(key_value)
     SendKeyPress(key_value, true)
 end
 
--- Filters a string to only include positive integers and hyphens.
--- This function is unused in the current script.
-function PositiveIntegerMask(text)
-    return text:gsub("[^%-%d]", "")
-end
-
 -- Toggles the visibility of specific UI elements in the game.
 -- It retrieves instances of UMG widgets by their blueprint class paths and sets their visibility.
 local function ToggleUI()
@@ -255,6 +249,10 @@ end
 -- It allows modification of the gamepad state before it's sent to the game.
 uevr.sdk.callbacks.on_xinput_get_state(
 function(retval, user_index, state)
+
+	-- Do nothing if Holster is disabled in the UEVR settings UI
+	if not EnableHolster then return end
+
     -- Read Gamepad stick and trigger input values.
     -- These variables (ThumbLX, LTrigger, etc.) are expected to be set by UEHelper's
     -- on_xinput_get_state callback, which is likely called before this script's callback.
@@ -568,6 +566,20 @@ local leanState = 0 -- Unused; 1 = left, 2 = right (commented out leaning logic)
 -- It's used for continuous updates, position tracking, and complex logic.
 uevr.sdk.callbacks.on_pre_engine_tick(
 function(engine, delta)
+
+	-- Holster is not checked in the UEVR UI
+	if not EnableHolster then
+		
+		-- If holster haptic feedback is enabled, disable it.
+		if HapticFeedback then
+			HapticFeedback = false
+			config_table.Holster_Haptic_Feedback = false
+		end
+
+		-- Holster is unchecked in the UEVR menu, so do no further logic.
+		return
+	end
+
     pawn = api:get_local_pawn(0) -- Re-obtain local player pawn.
     player = api:get_player_controller(0) -- Re-obtain player controller.
 
