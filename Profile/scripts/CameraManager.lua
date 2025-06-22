@@ -127,7 +127,7 @@ function(engine, delta)
                 player:ClientSetRotation(Vector3f.new(CamPitch - 7, CamYaw + 2, 0), true)
             end
 
-            -- Calculate vectors for HMD and hand
+            -- Calculate vectors for HMD and hand 
             HmdVector = hmd_component:GetForwardVector()
             HandVector = right_hand_component:GetForwardVector()
 
@@ -181,15 +181,15 @@ function(engine, delta)
                 pawn:AddMovementInput(hmd_component:GetRightVector(), LeftRightScaleFactor, true) -- Add left/right movement based on HMD
                 uevr.params.vr.set_mod_value("VR_MovementOrientation", "0") -- Set movement orientation to 0
             else -- If movement is controller-based
-				if config_table.Movement == 2 then
-                	pawn:AddMovementInput(right_hand_component:GetForwardVector(), ForwardBackwardScaleFactor, true) -- Add forward/backward movement based on right hand
-                	pawn:AddMovementInput(right_hand_component:GetRightVector(), LeftRightScaleFactor, true) -- Add left/right movement based on right hand
-                	uevr.params.vr.set_mod_value("VR_MovementOrientation", "0") -- Set movement orientation to 0
-				elseif config_table.Movement == 3 then
-					pawn:AddMovementInput(left_hand_component:GetForwardVector(), ForwardBackwardScaleFactor, true) -- Add forward/backward movement based on right hand
-                	pawn:AddMovementInput(left_hand_component:GetRightVector(), LeftRightScaleFactor, true) -- Add left/right movement based on right hand
-                	uevr.params.vr.set_mod_value("VR_MovementOrientation", "0") -- Set movement orientation to 0
-				end
+                if config_table.Movement == 2 then
+                    pawn:AddMovementInput(right_hand_component:GetForwardVector(), ForwardBackwardScaleFactor, true) -- Add forward/backward movement based on right hand
+                    pawn:AddMovementInput(right_hand_component:GetRightVector(), LeftRightScaleFactor, true) -- Add left/right movement based on right hand
+                    uevr.params.vr.set_mod_value("VR_MovementOrientation", "0") -- Set movement orientation to 0
+                elseif config_table.Movement == 3 then
+                    pawn:AddMovementInput(left_hand_component:GetForwardVector(), ForwardBackwardScaleFactor, true) -- Add forward/backward movement based on right hand
+                    pawn:AddMovementInput(left_hand_component:GetRightVector(), LeftRightScaleFactor, true) -- Add left/right movement based on right hand
+                    uevr.params.vr.set_mod_value("VR_MovementOrientation", "0") -- Set movement orientation to 0
+                end
             end
         end
         IsRecentered = false -- Reset recenter flag
@@ -219,7 +219,7 @@ uevr.sdk.callbacks.on_xinput_get_state(
 function(retval, user_index, state)
     if isBow then -- If bow is equipped
         
-		-- Compensate for rotation based on hand/HMD alignment if head-based movement is enabled
+        -- Compensate for rotation based on hand/HMD alignment if head-based movement is enabled
         if HeadBasedMovement then
             state.Gamepad.sThumbLX = ThumbLX * math.cos(-AlphaDiff) - ThumbLY * math.sin(-AlphaDiff)
             state.Gamepad.sThumbLY = math.sin(-AlphaDiff) * ThumbLX + ThumbLY * math.cos(-AlphaDiff)
