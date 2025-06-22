@@ -34,8 +34,8 @@ HolsterInit = true -- Flag to indicate if HolsterScript has been initialized.
 
 -- Confirm if required modules were loaded.
 if TrackersInit and configInit then
-    print("Trackers loaded")
-    print("Config Loaded")
+    print("HolsterScript.lua: Trackers loaded")
+    print("HolsterScript.lua: Config Loaded")
 end
 
 -- Seated mode offset for adjusting holster positions if SitMode is enabled in CONFIG.lua.
@@ -139,7 +139,7 @@ local isToggled = false -- Flag to prevent rapid UI toggling from a single input
 local function find_required_object(name)
     local obj = uevr.api:find_uobject(name)
     if not obj then
-        error("Cannot find " .. name)
+        error("HolsterScript.lua: Cannot find " .. name)
         return nil
     end
     return obj
@@ -242,7 +242,7 @@ local function ToggleUI()
             if WeaponComponent and WeaponComponent[2] then WeaponComponent[2]:SetVisibility(0) end
         end
         GUIState = not GUIState -- Invert the state for the next call.
-        -- print(HealthCOmponent[2]:get_full_name()) -- Debug print.
+        -- print("HolsterScript.lua: "..HealthCOmponent[2]:get_full_name()) -- Debug print.
     end
 end
 --------------------------------------------------------------------------------
@@ -283,36 +283,29 @@ function(retval, user_index, state)
             RTriggerWasPressed = 0
         end
 
-        --DISABLE DPAD
-	    --if isRhand then
-	    --  if not rShoulder then
-	    --      unpressButton(state, XINPUT_GAMEPAD_DPAD_RIGHT		)
-	    --	    unpressButton(state, XINPUT_GAMEPAD_DPAD_LEFT		)
-	    --	    unpressButton(state, XINPUT_GAMEPAD_DPAD_UP			)
-	    --	    unpressButton(state, XINPUT_GAMEPAD_DPAD_DOWN	    )
-	    --  end
-	    --else 
-	    --  if not lShoulder then
-	    --	    unpressButton(state, XINPUT_GAMEPAD_DPAD_RIGHT		)
-	    --	    unpressButton(state, XINPUT_GAMEPAD_DPAD_LEFT		)
-	    --	    unpressButton(state, XINPUT_GAMEPAD_DPAD_UP			)
-	    --	    unpressButton(state, XINPUT_GAMEPAD_DPAD_DOWN	    )
-	    --  end
-	    --end
-	
-        --Disable BUttons:
-        --if 	isRhand or isLeftHandModeTriggerSwitchOnly then
-        --	if lShoulder and SwapLShoulderLThumb then
-        --		unpressButton(state, XINPUT_GAMEPAD_LEFT_SHOULDER)
-        --	end
-        --else
-        --	if rShoulder and SwapLShoulderLThumb then
-        --		unpressButton(state, XINPUT_GAMEPAD_RIGHT_SHOULDER)
-        --	end
-        --end
-        --if lThumb and SwapLShoulderLThumb then
-        --	unpressButton(state, XINPUT_GAMEPAD_LEFT_THUMB)
-        --end
+        -- DISABLE DPAD
+        -- if isRhand then
+        --     unpressButton(state,XINPUT_GAMEPAD_DPAD_UP)
+        --     unpressButton(state,XINPUT_GAMEPAD_DPAD_RIGHT)
+        --     unpressButton(state,XINPUT_GAMEPAD_DPAD_LEFT)
+        --     unpressButton(state,XINPUT_GAMEPAD_DPAD_DOWN)
+        -- else
+        --     unpressButton(state,XINPUT_GAMEPAD_DPAD_UP)
+        --     unpressButton(state,XINPUT_GAMEPAD_DPAD_RIGHT)
+        --     unpressButton(state,XINPUT_GAMEPAD_DPAD_LEFT)
+        --     unpressButton(state,XINPUT_GAMEPAD_DPAD_DOWN)
+        -- end
+
+        -- Disable Buttons
+        -- if isRhand or isLeftHandModeTriggerSwitchOnly then
+        --     unpressButton(state,XINPUT_GAMEPAD_A)
+        --     unpressButton(state,XINPUT_GAMEPAD_B)
+        --     unpressButton(state,XINPUT_GAMEPAD_X)
+        --     unpressButton(state,XINPUT_GAMEPAD_Y)
+        -- end
+        -- if lThumb and SwapLShoulderLThumb then
+        --     unpressButton(state,XINPUT_GAMEPAD_LEFT_THUMB)
+        -- end
 
         -- Left Handed Mode Configuration: Remaps controls for left-handed players.
         -- 'isRhand' and 'isLeftHandModeTriggerSwitchOnly' are configured in CONFIG.lua.
@@ -390,7 +383,7 @@ function(retval, user_index, state)
         end
 
         -- Debug print.
-        -- print(RWeaponZone .. "   " .. RZone)
+        -- print("HolsterScript.lua: "..RWeaponZone .. "   " .. RZone)
 
         -- Disable Left Trigger if Right Hand is in Weapon Zone 2 (e.g., for fire mode switch).
         if RWeaponZone == 2 then
@@ -441,7 +434,7 @@ function(retval, user_index, state)
                 isRShoulderHeadL = false
             end
         end
-        -- print(rThumbOut) -- Debug print.
+        -- print("HolsterScript.lua: "..rThumbOut) -- Debug print.
 
         -- Trigger reload action if 'isReloading' flag is true.
         if isReloading then
@@ -450,14 +443,7 @@ function(retval, user_index, state)
         end
 
         -- Ready Up (commented out, likely an unfinished or disabled feature).
-        --if lGrabActive and rGrabActive then
-	    --    ReadyUpTick= ReadyUpTick+1
-	    --	if ReadyUpTick ==120 then
-	    --		api:get_player_controller(0):ReadyUp()
-	    --	end
-	    --else 
-	    --	ReadyUpTick=0
-	    --end
+        -- if lGrabActive and rGrabActive then ... end
 
         -- Grab Activation Logic: Detects when shoulder buttons are held or released.
         -- Sets 'rGrabActive'/'lGrabActive' and manages 'rGrabStart'/'lGrabStart' for debouncing.
@@ -582,7 +568,6 @@ local leanState = 0 -- Unused; 1 = left, 2 = right (commented out leaning logic)
 -- It's used for continuous updates, position tracking, and complex logic.
 uevr.sdk.callbacks.on_pre_engine_tick(
 function(engine, delta)
-    
     pawn = api:get_local_pawn(0) -- Re-obtain local player pawn.
     player = api:get_player_controller(0) -- Re-obtain player controller.
 
@@ -595,7 +580,7 @@ function(engine, delta)
         params.vr.get_joystick_axis(LeftController, RAxis)
         vecy = RAxis.y
     end
-    -- print("vecyy" .. vecy) -- Debug print.
+    -- print("HolsterScript.lua: vecyy" .. vecy) -- Debug print.
 
     -- Get current world locations and rotations of the HMD and tracked controllers.
     -- `right_hand_component`, `left_hand_component`, and `hmd_component` are expected
@@ -609,7 +594,7 @@ function(engine, delta)
     local LHandRotation = left_hand_component:K2_GetComponentRotation()
 
     -- 'inMenu' flag (managed by UEHelper) indicates if a game menu is open.
-    -- print(inMenu) -- Debug print.
+    -- print("HolsterScript.lua: "..inMenu) -- Debug print.
 
     -- LEANING (commented out section, suggesting this feature is disabled or under development).
     -- if PhysicalLeaning then ... end
@@ -909,10 +894,10 @@ function(engine, delta)
             Key2 = true
             SendKeyDown('2')
         elseif RZone == 3 and rGrabActive and isRShoulderHeadR == false then
-            -- print(isRShoulder) -- Debug print.
+            -- print("HolsterScript.lua: "..isRShoulder) -- Debug print.
             -- No explicit action, but it's checking `isRShoulderHeadR`.
         elseif LZone == 3 and lGrabActive and isRShoulderHeadL == false then
-            -- print(isRShoulder) -- Debug print.
+            -- print("HolsterScript.lua: "..isRShoulder) -- Debug print.
             -- No explicit action, but it's checking `isRShoulderHeadL`.
         elseif LZone == 8 and lGrabActive then -- Zone 8. No corresponding zone in `zones.lua` starting with LHZone8.
             Key1 = true
@@ -944,7 +929,7 @@ function(engine, delta)
     -- These actions depend on the off-hand being in a specific "weapon zone" relative to the main hand.
     if isRhand then -- Right-handed player weapon interactions.
         if RWeaponZone == 1 and lGrabActive then -- Left Hand in weapon reload zone (below gun) and Left Grab is active.
-            -- print(pawn.Equipped_Primary:Jig_CanChamberWeapon()) -- Commented out in original.
+            -- print("HolsterScript.lua: "..pawn.Equipped_Primary:Jig_CanChamberWeapon()) -- Commented out in original.
             isReloading = true -- Set reload flag to trigger 'X' button press in xinput callback.
         elseif RWeaponZone == 2 and LTrigger > 230 and LTriggerWasPressed == 0 then -- Left Trigger pulled hard in weapon mode switch zone.
             -- pawn:ChamberWeapon(false) -- Commented out in original.
@@ -971,27 +956,27 @@ function(engine, delta)
             -- No action defined in original script for Left-handed player.
         end
     end
-    -- print(LWeaponZone) -- Debug print.
+    -- print("HolsterScript.lua: "..LWeaponZone) -- Debug print.
 
     -- DEBUG PRINTS (commented out sections for displaying coordinates, useful for calibrating zones).
     -- To enable, uncomment the desired `print` statements.
 
     -- COORDINATES FOR HOLSTERS (HMD-relative positions)
-    -- print("RHandz: " .. RHandLocation.z .. "     Rhandx: ".. RHandLocation.x )
-    -- print("RHandx: " .. RHandNewX .. "     Lhandx: ".. LHandNewX .."      HMDx: " .. HmdLocation.x)
-    -- print("RHandy: " .. RHandNewY .. "     Lhandy: ".. LHandNewY .."      HMDy: " .. HmdLocation.y)
-    -- print(HmdRotation.y)
-    -- print("                   ")
-    -- print("                   ")
-    -- print("                   ")
+    -- print("HolsterScript.lua: RHandz: " .. RHandLocation.z .. "     Rhandx: ".. RHandLocation.x )
+    -- print("HolsterScript.lua: RHandx: " .. RHandNewX .. "     Lhandx: ".. LHandNewX .."      HMDx: " .. HmdLocation.x)
+    -- print("HolsterScript.lua: RHandy: " .. RHandNewY .. "     Lhandy: ".. LHandNewY .."      HMDy: " .. HmdLocation.y)
+    -- print("HolsterScript.lua: "..HmdRotation.y)
+    -- print("HolsterScript.lua:                    ")
+    -- print("HolsterScript.lua:                    ")
+    -- print("HolsterScript.lua:                    ")
 
     -- COORDINATES FOR WEAPON ZONES (Hand-relative positions)
-    -- print("RHandz: " .. RHandWeaponZ .. "     Lhandz: ".. LHandWeaponZ )
-    -- print("RHandx: " .. RHandWeaponX .. "     Lhandx: ".. LHandWeaponX )
-    -- print("RHandy: " .. RHandWeaponY .. "     Lhandy: ".. LHandWeaponY )
-    -- print("                   ")
-    -- print("                   ")
-    -- print("                   ")
+    -- print("HolsterScript.lua: RHandz: " .. RHandWeaponZ .. "     Lhandz: ".. LHandWeaponZ )
+    -- print("HolsterScript.lua: RHandx: " .. RHandWeaponX .. "     Lhandx: ".. LHandWeaponX )
+    -- print("HolsterScript.lua: RHandy: " .. RHandWeaponY .. "     Lhandy: ".. LHandWeaponY )
+    -- print("HolsterScript.lua:                    ")
+    -- print("HolsterScript.lua:                    ")
+    -- print("HolsterScript.lua:                    ")
 end)
 --------------------------------------------------------------------------------
 -- EndRegion: Pre-Engine Tick Callback
