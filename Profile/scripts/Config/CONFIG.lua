@@ -61,9 +61,9 @@ end
 
 --Assign config variables
 if config_table.Movement == 1 then
-    HeadBasedMovement = true
+    HeadBasedMovementOrientation = true
 else
-    HeadBasedMovement = false
+    HeadBasedMovementOrientation = false
 end
 
 SnapTurn = config_table.Snap_Turn
@@ -165,9 +165,9 @@ uevr.sdk.callbacks.on_draw_ui(function()
     local movement_values = {"Head", "R Controller"}
     local movement = create_dropdown("Movement Based On", "Movement", movement_values)
     if movement == 1 then
-        HeadBasedMovement = true
+        HeadBasedMovementOrientation = true
     else
-        HeadBasedMovement = false
+        HeadBasedMovementOrientation = false
     end
 
     SnapTurn = create_checkbox("Snap Turn", "Snap_Turn")

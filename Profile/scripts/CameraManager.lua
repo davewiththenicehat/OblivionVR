@@ -165,9 +165,9 @@ function(engine, delta)
                 AlphaDiff = AlphaDiff - math.pi * 20 / 180 -- Apply an offset when aiming with a bow
             end
 
-        elseif HeadBasedMovement then -- If head-based movement is enabled
+        elseif HeadBasedMovementOrientation then -- If head-based movement is enabled
             uevr.params.vr.set_mod_value("VR_MovementOrientation", "1") -- Set movement orientation to 1 (likely Head)
-        elseif HeadBasedMovement == false then -- If head-based movement is disabled
+        elseif not HeadBasedMovementOrientation then -- If head-based movement is disabled
             uevr.params.vr.set_mod_value("VR_MovementOrientation", "2") -- Set movement orientation to 2 (likely Controller)
         end
 
@@ -176,11 +176,11 @@ function(engine, delta)
             LeftRightScaleFactor = ThumbLX / 32767 -- Scale factor for left/right movement based on thumbstick X
             ForwardBackwardScaleFactor = ThumbLY / 32767 -- Scale factor for forward/backward movement based on thumbstick Y
 
-            if HeadBasedMovement then -- If movement is head-based
+            if HeadBasedMovementOrientation then -- If movement is head-based
                 pawn:AddMovementInput(hmd_component:GetForwardVector(), ForwardBackwardScaleFactor, true) -- Add forward/backward movement based on HMD
                 pawn:AddMovementInput(hmd_component:GetRightVector(), LeftRightScaleFactor, true) -- Add left/right movement based on HMD
                 uevr.params.vr.set_mod_value("VR_MovementOrientation", "0") -- Set movement orientation to 0
-            elseif not HeadBasedMovement then -- If movement is controller-based
+            elseif not HeadBasedMovementOrientation then -- If movement is controller-based
                 pawn:AddMovementInput(right_hand_component:GetForwardVector(), ForwardBackwardScaleFactor, true) -- Add forward/backward movement based on right hand
                 pawn:AddMovementInput(right_hand_component:GetRightVector(), LeftRightScaleFactor, true) -- Add left/right movement based on right hand
                 uevr.params.vr.set_mod_value("VR_MovementOrientation", "0") -- Set movement orientation to 0
