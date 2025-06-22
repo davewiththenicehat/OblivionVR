@@ -162,7 +162,7 @@ uevr.sdk.callbacks.on_draw_ui(function()
     end
     
     imgui.text("Movement")
-    local movement_values = {"Head", "R Controller"}
+    local movement_values = {"Head", "Right Controller", "Left Controller"}
     local movement = create_dropdown("Movement Based On", "Movement", movement_values)
     if movement == 1 then
         HeadBasedMovementOrientation = true
