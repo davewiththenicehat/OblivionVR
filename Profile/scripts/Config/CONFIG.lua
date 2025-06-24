@@ -14,6 +14,43 @@ local profile_name = "6dof Attached Items Profile (Righthand Aiming)"
 local required_uevr_commit_count = nil
 local uevr_version = nil
 
+-- List of all possible input options for dropdowns.
+controller_input_options = {
+    None = "None", -- Option for no mapping
+    ThumbLX = "ThumbLX",
+    ThumbLY = "ThumbLY",
+    ThumbRX = "ThumbRX",
+    ThumbRY = "ThumbRY",
+    LTrigger = "LTrigger",
+    RTrigger = "RTrigger",
+    rShoulder = "rShoulder",
+    lShoulder = "lShoulder",
+    lThumb = "lThumb",
+    rThumb = "rThumb",
+    Abutton = "Abutton",
+    Bbutton = "Bbutton",
+    Xbutton = "Xbutton",
+    Ybutton = "Ybutton",
+}
+
+--[[
+    Global table to manage actions in the game that can be controlled by the controller.
+    Save what controller button the action is mapped to.
+    This table creates the default controller button each action gets mapped to.
+]]--
+controller_action_options = {
+    ["sprint"] = "lShoulder",
+    ["change view"] = "rThumb",
+    ["jump"] = "None", -- This is normally thumb right up
+    ["crouch"] = "None", -- This is normally thumb right down
+    ["stow weapon"] = "Bbutton",
+    ["activate"] = "Abutton",
+    ["weapon quick menu"] = "Ybutton",
+    ["cast spell"] = "Xbutton",
+    ["block"] = "LTrigger",
+    ["attack"] = "RTrigger",
+}
+
 -- Check if UEVR version check is enabled in preferences.
 if check_uevr_version then
     -- Set the required commit count for version compatibility.
@@ -44,8 +81,13 @@ config_table = {
     RadialQuickMenu=true,
     ManageLighting=true,
     --HandIndex=2
-    --isRhand = true    
+    --isRhand = true
 }
+
+-- add controller input actions to config table
+for game_action_name, game_action_value in pairs(controller_action_options) do
+    config_table[game_action_name] = game_action_value
+end
 
 -- Search for the configuration file.
 json_files = fs.glob(config_filename)
@@ -219,6 +261,17 @@ uevr.sdk.callbacks.on_draw_ui(function()
     ManageLighting=create_checkbox("Manage lighting (Restart required on uncheck)", "ManageLighting") 
     ExtraBlockRange = create_slider_int("Extra Block Range (in cm)", "Extra_Block_Range", 0, 50)
     MeleePower = create_slider_int("Melee Power (swing intensity)", "Melee_Power", 0, 1500)
+
+    imgui.separator() -- Visual separator for the new section
+    imgui.text("Control Mapping")  -- Show message to UEVR UI
+    for game_action_name, _ in pairs(controller_action_options) do  -- Loop through all the controller manageable game actions
+        -- Create a UEVR UI drop down box for this controller action, save changes in config table if changes are made.
+        local game_action_value = create_dropdown(game_action_name, game_action_name, controller_input_options)
+        -- update the global controller options table with the value from UEVR menu.
+        controller_action_options[game_action_name] = game_action_value
+    end
+    imgui.separator() -- Visual separator for the new section
+
 end)
 
 -- DEBUG VALUES, to test to fix some potential issues:
