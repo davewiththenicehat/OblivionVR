@@ -43,10 +43,10 @@ controller_action_options = {
     ["change view"] = "rThumb",
     ["jump"] = "None", -- This is normally thumb right up
     ["crouch"] = "None", -- This is normally thumb right down
-    ["stow weapon"] = "Bbutton",
+    ["stow weapon"] = "Xbutton",
     ["activate"] = "Abutton",
     ["weapon quick menu"] = "Ybutton",
-    ["cast spell"] = "Xbutton",
+    ["cast spell"] = "Bbutton",
     ["block"] = "LTrigger",
     ["attack"] = "RTrigger",
 }
@@ -266,9 +266,10 @@ uevr.sdk.callbacks.on_draw_ui(function()
     imgui.text("Control Mapping")  -- Show message to UEVR UI
     for game_action_name, _ in pairs(controller_action_options) do  -- Loop through all the controller manageable game actions
         -- Create a UEVR UI drop down box for this controller action, save changes in config table if changes are made.
-        local game_action_value = create_dropdown(game_action_name, game_action_name, controller_input_options)
-        -- update the global controller options table with the value from UEVR menu.
-        controller_action_options[game_action_name] = game_action_value
+        create_dropdown(game_action_name, game_action_name, controller_input_options)
+        -- update the global controller options table.
+        -- the create_dropdown function updates the config_table if a value changed.
+        controller_action_options[game_action_name] = config_table[game_action_name]
     end
     imgui.separator() -- Visual separator for the new section
 
