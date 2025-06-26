@@ -58,38 +58,45 @@ local BbuttonNotPressedAfterMenu = false
 local SprintState = false
 
 local controller_map_reference = {
-    rShoulder = XINPUT_GAMEPAD_RIGHT_SHOULDER,
-    lShoulder = XINPUT_GAMEPAD_LEFT_SHOULDER,
-    lThumb    = XINPUT_GAMEPAD_LEFT_THUMB,
-    rThumb    = XINPUT_GAMEPAD_RIGHT_THUMB,
-    Abutton   = XINPUT_GAMEPAD_A,
-    Bbutton   = XINPUT_GAMEPAD_B,
-    Xbutton   = XINPUT_GAMEPAD_X,
-    Ybutton   = XINPUT_GAMEPAD_Y
+    ["rShoulder"] = XINPUT_GAMEPAD_RIGHT_SHOULDER,
+    ["lShoulder"] = XINPUT_GAMEPAD_LEFT_SHOULDER,
+    ["lThumb"]    = XINPUT_GAMEPAD_LEFT_THUMB,
+    ["rThumb"]    = XINPUT_GAMEPAD_RIGHT_THUMB,
+    ["Abutton"]   = XINPUT_GAMEPAD_A,
+    ["Bbutton"]   = XINPUT_GAMEPAD_X,  -- B and X are inverted
+    ["Xbutton"]   = XINPUT_GAMEPAD_B,  -- ^
+    ["Ybutton"]   = XINPUT_GAMEPAD_Y
 }
 
--- invert B and X on oculus
-controller_map_reference["Bbutton"] = XINPUT_GAMEPAD_X
-controller_map_reference["Xbutton"] = XINPUT_GAMEPAD_B
+--[[
+controlleraction_options table:
+activate: Abutton
+weapon quick menu: lShoulder
+crouch: None
+attack: RTrigger
+jump: None
+sprint: lThumb
+block: LTrigger
+stow weapon: Xbutton
+change view: rThumb
+cast spell: rShoulder
 
--- in oculus
--- XINPUT_GAMEPAD_B is the X button
--- XINPUT_GAMEPAD_X is the XINPUT_GAMEPAD_B
+Button pressed: rShoulder
+default_button_action: cast spell
+user_mapped_button_for_action: Bbutton
+Unpressing: 512
+adding button to buttons press table: 16384
+        1: 16384
+xinput_button_needing_press:16384
+]]
 
--- A is the A button
--- rShoulder is the rShoulder
--- lShoulder is the lShoulder
--- lThumb is the lThumb
--- rThumb is the rThumb
--- x is the 
--- y is the
-
+-- Map default buttons in the game to actions
 local default_uevr_action_controller_map = {
     lThumb = "sprint",
     rThumb = "change view",
     Ybutton = "jump", -- This is normally thumb right up
-    Xbutton = "stow weapon", -- This is normally thumb right down
-    Bbutton = "crouch",
+    Xbutton = "crouch", -- This is normally thumb right down
+    Bbutton = "stow weapon",
     Abutton = "activate",
     lShoulder = "weapon quick menu",
     rShoulder = "cast spell",
@@ -97,10 +104,27 @@ local default_uevr_action_controller_map = {
     RTrigger = "attack"
 }
 
+-- map the actions to keys now
+local uevr_action_to_button_controller_map = {}
+for key, value in pairs(default_uevr_action_controller_map) do
+    uevr_action_to_button_controller_map[value] = key
+end
+
 -- Callback function for intercepting and modifying XInput gamepad states.
 -- This function is called every time the gamepad state is updated.
 uevr.sdk.callbacks.on_xinput_get_state(
     function(retval, user_index, state)
+
+
+
+        
+
+        --[[
+        for button_name, xinput_button_instance in pairs(controller_map_reference) do
+            if isButtonPressed(state, xinput_button_instance) then
+                print("\nButton pressed: "..button_name)
+            end
+        end
 
         if isButtonPressed(state, XINPUT_GAMEPAD_X) then
             print ("controlleraction_options table:")
@@ -108,10 +132,12 @@ uevr.sdk.callbacks.on_xinput_get_state(
                 print (action_name..": "..button_name)
             end
         end
+        ]]
 
         -- Game is in the game menu
         if isMenu then
 
+            -- remap B and X buttons when in the game menu
             if Bbutton then unpressButton(state, XINPUT_GAMEPAD_B) end
             if Xbutton then unpressButton(state, XINPUT_GAMEPAD_X) end
             if Bbutton then pressButton(state, XINPUT_GAMEPAD_X) end
@@ -121,24 +147,37 @@ uevr.sdk.callbacks.on_xinput_get_state(
 
             local button_presses_needed = {}
 
+            -- Loop through all the buttons we are allowing players to remap
             for button_name, xinput_button_instance in pairs(controller_map_reference) do 
-                -- The button we are looping through has been pressed by the player.
+                -- The current button we are looping through has been pressed by the player.
                 if isButtonPressed(state, xinput_button_instance) then
+                    print("\nButton pressed: "..button_name)
                     default_button_action = default_uevr_action_controller_map[button_name]
-                    user_mapped_button_for_action = controller_action_options[default_button_action]
+                    local user_mapped_button_for_action = controller_action_options[default_button_action]
+                    print("default_button_action: "..default_button_action)
+                    print("user_mapped_button_for_action: "..user_mapped_button_for_action)
                     -- If the user has mapped a different action for this button.
                     if user_mapped_button_for_action ~= button_name then
+                        print("Unpressing: "..tostring(xinput_button_instance))
                         unpressButton(state, xinput_button_instance) -- stop pressing the button
                         -- Add an instance of the button the user would like this action mapped
                         -- to the button_presses_needed table.
                         -- Don't press the button now. The loop is not done.
-                        table.insert(button_presses_needed, controller_map_reference[user_mapped_button_for_action])
+                        local button_player_wants_pressed = uevr_action_to_button_controller_map[button_name]
+                        print("button_player_wants_pressed: "..button_player_wants_pressed)
+                        table.insert(button_presses_needed, button_player_wants_pressed)
                     end
                 end
             end
 
+            --if button_presses_needed then print("\nContents of button_presses_needed.") end
+            for key, value in pairs(button_presses_needed) do
+                print("\t"..tostring(key) .. ": " .. tostring(value))
+            end
+
             --loop throug button_presses_needed and press the buttons
             for _, xinput_button_needing_press in ipairs(button_presses_needed) do
+                print("xinput_button_needing_press:"..xinput_button_needing_press)
                 pressButton(state, xinput_button_needing_press)
             end
 

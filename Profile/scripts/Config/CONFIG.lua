@@ -50,6 +50,10 @@ controller_action_options = {
     ["block"] = "LTrigger",
     ["attack"] = "RTrigger",
 }
+controller_button_to_actions_map = {}
+for key, value in pairs(controller_action_options) do
+    controller_button_to_actions_map[value] = key
+end
 
 -- Check if UEVR version check is enabled in preferences.
 if check_uevr_version then
@@ -270,6 +274,9 @@ uevr.sdk.callbacks.on_draw_ui(function()
         -- update the global controller options table.
         -- the create_dropdown function updates the config_table if a value changed.
         controller_action_options[game_action_name] = config_table[game_action_name]
+    end
+    for key, value in pairs(controller_action_options) do
+        controller_button_to_actions_map[value] = key
     end
     imgui.separator() -- Visual separator for the new section
 
