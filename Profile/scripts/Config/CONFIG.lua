@@ -17,12 +17,6 @@ local uevr_version = nil
 -- List of all possible input options for dropdowns.
 controller_input_options = {
     None = "None", -- Option for no mapping
-    ThumbLX = "ThumbLX",
-    ThumbLY = "ThumbLY",
-    ThumbRX = "ThumbRX",
-    ThumbRY = "ThumbRY",
-    LTrigger = "LTrigger",
-    RTrigger = "RTrigger",
     rShoulder = "rShoulder",
     lShoulder = "lShoulder",
     lThumb = "lThumb",
