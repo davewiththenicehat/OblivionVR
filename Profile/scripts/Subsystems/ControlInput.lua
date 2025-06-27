@@ -68,28 +68,6 @@ local controller_map_reference = {
     ["Ybutton"]   = XINPUT_GAMEPAD_Y
 }
 
---[[
-controlleraction_options table:
-activate: Abutton
-weapon quick menu: lShoulder
-crouch: None
-attack: RTrigger
-jump: None
-sprint: lThumb
-block: LTrigger
-stow weapon: Xbutton
-change view: rThumb
-cast spell: rShoulder
-
-Button pressed: rShoulder
-default_button_action: cast spell
-user_mapped_button_for_action: Bbutton
-Unpressing: 512
-adding button to buttons press table: 16384
-        1: 16384
-xinput_button_needing_press:16384
-]]
-
 -- Map default buttons in the game to actions
 local default_uevr_action_controller_map = {
     lThumb = "sprint",
@@ -115,16 +93,6 @@ end
 uevr.sdk.callbacks.on_xinput_get_state(
     function(retval, user_index, state)
 
-        --[[
-        --load settings from the config table
-        for _, game_action_name in pairs(default_uevr_action_controller_map) do
-            controller_action_options[game_action_name] = config_table[game_action_name]
-        end
-        for key, value in pairs(controller_action_options) do
-            controller_button_to_actions_map[value] = key
-        end
-        ]]
-
         -- Game is in the game menu
         if isMenu then
 
@@ -140,6 +108,7 @@ uevr.sdk.callbacks.on_xinput_get_state(
 
             -- Loop through all the buttons we are allowing players to remap
             for pressed_button_name, pressed_xinput_instance in pairs(controller_map_reference) do
+                
                 -- The current button we are looping through has been pressed by the player.
                 if isButtonPressed(state, pressed_xinput_instance) then
 
@@ -148,6 +117,16 @@ uevr.sdk.callbacks.on_xinput_get_state(
 
                     -- If there's a default action associated with this button
                     if default_action_for_button then
+
+                        -- load button remapping from the config table
+                        for _, game_action_name in pairs(default_uevr_action_controller_map) do
+                            controller_action_options[game_action_name] = config_table[game_action_name]
+                        end
+                        -- Create a table that maps actions to buttons
+                        for key, value in pairs(controller_action_options) do
+                            controller_button_to_actions_map[value] = key
+                        end
+
                         -- Get the user's chosen button NAME for this default action from CONFIG.lua
                         action_player_wants = controller_button_to_actions_map[pressed_button_name]
                         local user_mapped_button_name_for_action = controller_action_options[action_player_wants]

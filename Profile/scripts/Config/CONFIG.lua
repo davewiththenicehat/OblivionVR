@@ -50,6 +50,7 @@ controller_action_options = {
     ["block"] = "LTrigger",
     ["attack"] = "RTrigger",
 }
+-- create a table that maps buttons to actions
 controller_button_to_actions_map = {}
 for key, value in pairs(controller_action_options) do
     controller_button_to_actions_map[value] = key
@@ -271,12 +272,6 @@ uevr.sdk.callbacks.on_draw_ui(function()
     for game_action_name, _ in pairs(controller_action_options) do  -- Loop through all the controller manageable game actions
         -- Create a UEVR UI drop down box for this controller action, save changes in config table if changes are made.
         create_dropdown(game_action_name, game_action_name, controller_input_options)
-        -- update the global controller options table.
-        -- the create_dropdown function updates the config_table if a value changed.
-        controller_action_options[game_action_name] = config_table[game_action_name]
-    end
-    for key, value in pairs(controller_action_options) do
-        controller_button_to_actions_map[value] = key
     end
     imgui.separator() -- Visual separator for the new section
 
