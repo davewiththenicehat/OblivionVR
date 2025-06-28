@@ -1,9 +1,12 @@
--- Require the UEHelper subsystem, which provides utility functions for interacting with Unreal Engine objects and XInput.
-require(".\\Subsystems\\UEHelper")
-
-local api = uevr.api
-
 --[[
+
+    RadialQuickmenu.lua
+        creates a on_pre_engine_tick event to handle slowing time if the quick menu is open.
+
+    UEHelper.lua
+        contain a on_pre_engine_tick even to control a variable isSprinting.
+        isSprinting is true if the player pawn is sprinting and is used in a few scripts.
+
 	Default UEVR control mapping
 		
 		Dpad left  -> up.....move forward
@@ -47,17 +50,18 @@ local api = uevr.api
 
 ]]
 
+-- Require the UEHelper subsystem, which provides utility functions for interacting with Unreal Engine objects and XInput.
+require(".\\Subsystems\\UEHelper")
+
+local api = uevr.api
+
 -- Global variable to track the state of the Quick Menu. This needs to be global so other scripts (like RadialQuickMenu) can access its state.
 QuickMenu = false 
 
 -- Local variable to track if the B button was not pressed after the menu was exited.
 local BbuttonNotPressedAfterMenu = false
 
--- Local variable to track the sprint state. (Note: this variable is declared but not explicitly used in the provided snippet to control sprint directly;
--- sprint logic is primarily handled in UEHelper's UpdateSprintStatus and the remapping here).
-local SprintState = false
-
-local controller_map_reference = {
+controller_map_reference = {
     ["rShoulder"] = XINPUT_GAMEPAD_RIGHT_SHOULDER,
     ["lShoulder"] = XINPUT_GAMEPAD_LEFT_SHOULDER,
     ["lThumb"]    = XINPUT_GAMEPAD_LEFT_THUMB,
@@ -69,7 +73,7 @@ local controller_map_reference = {
 }
 
 -- Map default buttons in the game to actions
-local default_uevr_action_controller_map = {
+default_uevr_action_controller_map = {
     lThumb = "sprint",
     rThumb = "change view",
     Ybutton = "jump", -- This is right thumb up in the UEVR profile
@@ -83,7 +87,7 @@ local default_uevr_action_controller_map = {
 }
 
 -- map the actions to keys now
-local uevr_action_to_button_controller_map = {}
+uevr_action_to_button_controller_map = {}
 for key, value in pairs(default_uevr_action_controller_map) do
     uevr_action_to_button_controller_map[value] = key
 end
@@ -110,6 +114,19 @@ uevr.sdk.callbacks.on_xinput_get_state(
             radial_quick_menu_active = false  -- record that the player is not longer in the quick menu
         end
         -- --- End Quick Menu Deactivation Logic ---
+
+        -- --- Start sprint deactivation logic ---
+        -- The current button the user has mapped for springing
+        local current_sprint_button_name = controller_action_options["sprint"]
+        -- Get a reference for the xinput object that the user wants to map the sprint button to
+        local current_sprint_xinput = controller_map_reference[current_sprint_button_name]
+        if isSprinting  -- If the player is currently sprinting
+           and current_sprint_xinput  -- there is a good controller map
+           and isButtonNotPressed(state, current_sprint_xinput) then -- but button the user mapped for springing is not pressed
+            isSprinting = false
+        end
+        -- --- End sprint deactivation logic ---
+
 
         -- Game is in the game menu
         if isMenu then
@@ -154,7 +171,7 @@ uevr.sdk.callbacks.on_xinput_get_state(
                         if default_action_for_button ~= pressed_button_name then
 
                             -- User has remapped it.
-                            -- 1. Unpress the physically pressed button
+                            -- Unpress the physically pressed button
                             unpressButton(state, pressed_xinput_instance)
 
                             -- If this is a quick menu request
@@ -169,12 +186,18 @@ uevr.sdk.callbacks.on_xinput_get_state(
                                 goto next_button_in_loop
                             end
 
-                            -- 2. Determine the XInput constant for the button the user *wants* pressed
+                            -- if the player is sprinting
+                            if action_player_wants == "sprint" then
+                                isSprinting = true
+                            end
+
+                            -- Determine the XInput constant for the button the user *wants* pressed
                             button_name_player_wants_pressed = uevr_action_to_button_controller_map[action_player_wants]
                             local target_xinput_instance = controller_map_reference[button_name_player_wants_pressed]
 
                             -- Make sure the target button is not "None" and is a valid XInput constant
                             if target_xinput_instance and user_mapped_button_name_for_action ~= "None" then
+                                -- add the button to the table of buttons that will be pressed
                                 table.insert(buttons_to_press, target_xinput_instance)
                             end
 
@@ -186,7 +209,7 @@ uevr.sdk.callbacks.on_xinput_get_state(
 
             end
 
-            -- Then, apply the presses
+            -- Apply the presses
             for _, xinput_to_press in ipairs(buttons_to_press) do
                 pressButton(state, xinput_to_press)
             end
@@ -199,16 +222,6 @@ uevr.sdk.callbacks.on_xinput_get_state(
             -- if the right thumb pad was pressed (beyond the deadzone) up jump
             if ThumbRY < -30000 then
                 pressButton(state, XINPUT_GAMEPAD_B)  -- press the crouch key
-            end
-        end
-
-        -- This block prevents taking over stick input if the in-game menu is open or the player is riding.
-        if not isMenu and not isRiding then
-            -- If not sprinting, zero out the Left Thumbstick X and Y input.
-            -- This effectively stops player movement if not sprinting.
-            if not isSprinting then
-                state.Gamepad.sThumbLX = 0
-                state.Gamepad.sThumbLY = 0
             end
         end
 

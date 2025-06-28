@@ -153,7 +153,7 @@ end
 
 -- General game state flags
 current_scope_state = false
-isSprinting = false
+isSprinting = false -- This is managed in ControlInput.lua
 isDriving = false
 isMenu = false
 isWeaponDrawn = false
@@ -246,19 +246,6 @@ local function UpdateCombatStanceStatus(pawn)
     end
 end
 
---- Updates the `isSprinting` status based on left shoulder button and left thumbstick Y input.
-local function UpdateSprintStatus()
-    if lShoulder and ThumbLY >= 28000 then 
-        isSprinting = true
-    end
-    if ThumbLY < 15000 then
-        isSprinting = false
-    end
-    -- Note: If ThumbLY is between 15000 and 28000 (and lShoulder is not pressed),
-    -- isSprinting will retain its previous value.
-end
-
-
 --------------------------------------------------------------------------------
 -- UEVR SDK Callbacks
 --------------------------------------------------------------------------------
@@ -286,6 +273,5 @@ uevr.sdk.callbacks.on_pre_engine_tick(
         UpdateMenuStatus(Player)
         UpdateCombatStanceStatus(dpawn) 
         UpdateBowStatus(dpawn)
-        UpdateSprintStatus()
     end
 )
