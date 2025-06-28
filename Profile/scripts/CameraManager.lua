@@ -204,7 +204,7 @@ function(engine, delta)
     if LastState == not isBow then
         LastState = isBow
         ConditionChagned = true
-        print("ConditionChagned") -- Debug print
+        --print("ConditionChagned") -- Debug print
     end
 end)
 

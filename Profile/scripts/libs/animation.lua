@@ -6,7 +6,7 @@ local animations = {}
 local boneVisualizers = {}
 
 function M.print(text)
-	uevrUtils.print("[animation] " .. text)
+	--uevrUtils.print("[animation] " .. text)
 end
 
 function M.createPoseableComponent(skeletalMeshComponent, parent)
@@ -217,7 +217,7 @@ function M.setSkeletalVisualizationBoneScale(skeletalMeshComponent, index, scale
 	if skeletalMeshComponent ~= nil then
 		if index < 1 then index = 1 end
 		if index > skeletalMeshComponent:GetNumBones() then index = skeletalMeshComponent:GetNumBones() end
-		uevrUtils.print("Visualizing " .. index .. " " .. skeletalMeshComponent:GetBoneName(index):to_string())
+		--uevrUtils.print("Visualizing " .. index .. " " .. skeletalMeshComponent:GetBoneName(index):to_string())
 		local component = boneVisualizers[index]
 		component.RelativeScale3D.X = scale
 		component.RelativeScale3D.Y = scale

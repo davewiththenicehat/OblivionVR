@@ -170,7 +170,7 @@ local function doSkylightUpdate()
 
     -- Adjust skylight intensity and brightness based on time of day and interior status.
     if isSunrise and not isInterior then
-        print("Sunrise detected.")
+        --print("Sunrise detected.")
         local sunrisePercent = (sunAngleOffset + sunSideAngle) / SUNRISE_THRESHOLD
         -- Smooth transition for skylight intensity and brightness during sunrise.
         if sunrisePercentLast - sunrisePercent < 0 and 0 - sunrisePercent < -0.01 or isMenu then
@@ -184,7 +184,7 @@ local function doSkylightUpdate()
         BrightnessLast = Brightness
         skylightIntensityLast = skylightIntensity
     elseif isSunset and not isInterior then
-        print("Sunset detected.")
+        --print("Sunset detected.")
         local sunsetPercent = (SUNSET_THRESHOLD - (sunSideAngle + sunAngleOffset)) / SUNSET_THRESHOLD
         -- Smooth transition for skylight intensity and brightness during sunset.
         if sunsetPercentLast - sunsetPercent < 0 and 0 - sunsetPercent < -0.01 or isMenu then
@@ -198,13 +198,13 @@ local function doSkylightUpdate()
         BrightnessLast = Brightness
         sunsetPercentLast = sunsetPercent
     elseif isDay and not isInterior then
-        print("Day detected.")
+        --print("Day detected.")
         Brightness = MAX_BRIGHTNESS
         skylightIntensity = SKYLIGHT_INTENSITY_DAY -- Set to full day intensity.
         skylightIntensityLast = skylightIntensity
         BrightnessLast = Brightness
     elseif isNight or isInterior then
-        print("Night or Interior detected.")
+        --print("Night or Interior detected.")
         Brightness = MIN_BRIGHTNESS
         skylightIntensity = tempNight -- Set to night intensity or adjusted interior night intensity.
 
@@ -213,14 +213,14 @@ local function doSkylightUpdate()
         skylightIntensityLast = skylightIntensity
         BrightnessLast = Brightness
     else
-        print("Neither day, night, sunrise, sunset, nor interior detected. Setting average lighting.")
+        --print("Neither day, night, sunrise, sunset, nor interior detected. Setting average lighting.")
         skylightIntensity = currentSkylightIntensity / 2
         Brightness = (MAX_BRIGHTNESS + MIN_BRIGHTNESS) / 2
     end
 
     -- If in a menu, revert to last known lighting settings to avoid abrupt changes.
     if isMenu then
-        print("Menu detected. Using last known lighting settings.")
+        --print("Menu detected. Using last known lighting settings.")
         skylightIntensity = skylightIntensityLast
         Brightness = BrightnessLast
     end
@@ -258,14 +258,14 @@ uevr.sdk.callbacks.on_pre_engine_tick(
                     -- Detect if the level has changed.
                     if last_level ~= level then
                         local WorldName = world:get_full_name()
-                        print("World Name: " .. WorldName)
+                        --print("World Name: " .. WorldName)
 
                         -- Determine if the current location is an interior or exterior based on world name.
                         if not WorldName:find("World/") then
-                            print("Location: Interior")
+                            --print("Location: Interior")
                             isInterior = true
                         else
-                            print("Location: Exterior.")
+                            --print("Location: Exterior.")
                             isInterior = false
                         end
 
@@ -292,7 +292,7 @@ uevr.sdk.callbacks.on_pre_engine_tick(
                         for x, i in ipairs(PointlightArray) do
                             if i ~= nil and not i:get_full_name():find("Torch") then
                                 i:SetAttenuationRadius(3500)
-                                print("Adjusted PointLight: " .. i:get_full_name())
+                                --print("Adjusted PointLight: " .. i:get_full_name())
                             elseif i:get_full_name():find("Torch") then
                                 i:SetAttenuationRadius(1500)
                             end

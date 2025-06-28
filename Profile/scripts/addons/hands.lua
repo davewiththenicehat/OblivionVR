@@ -109,7 +109,7 @@ local boneList = {31, 53, 74,92,114,167,189,211,233,254}
  handBoneList = {31, 53, 74,92,114,167,189,211,233,254 }
 
 function M.print(text)
-	uevrUtils.print("[hands] " .. text)
+	--uevrUtils.print("[hands] " .. text)
 end
 
 function M.reset()
@@ -165,7 +165,7 @@ function M.createComponent(skeletalMeshComponent, name, hand)
 				end
 			end
 			
-			print("Using",rootBoneName,"\n")
+			--print("Using",rootBoneName,"\n")
 			controllers.attachComponentToController(hand, component)
 			uevrUtils.set_component_relative_transform(component, rootOffset, rootOffset)	
 
@@ -222,7 +222,7 @@ function M.adjustRotation(hand, axis, delta)
 	local currentLocation = hand == 1 and currentRightLocation or currentLeftLocation
 	local currentRotation = hand == 1 and currentRightRotation or currentLeftRotation
 	currentRotation[axis] = currentRotation[axis] + delta
-	print("Hand: ",hand," Rotation:",currentRotation[1], currentRotation[2], currentRotation[3],"\n")
+	--print("Hand: ",hand," Rotation:",currentRotation[1], currentRotation[2], currentRotation[3],"\n")
 	local location = uevrUtils.vector(currentLocation[1], currentLocation[2], currentLocation[3])
 	local rotation = uevrUtils.rotator(currentRotation[1], currentRotation[2], currentRotation[3])
 	animation.initPoseableComponent((hand == 1) and rightHandComponent or leftHandComponent, (hand == 1) and rightJointName or leftJointName, (hand == 1) and rightShoulderName or leftShoulderName, (hand == 1) and leftShoulderName or rightShoulderName, location, rotation, uevrUtils.vector(currentScale, currentScale, currentScale), rootBoneName)
@@ -232,7 +232,7 @@ function M.adjustLocation(hand, axis, delta)
 	local currentLocation = hand == 1 and currentRightLocation or currentLeftLocation
 	local currentRotation = hand == 1 and currentRightRotation or currentLeftRotation
 	currentLocation[axis] = currentLocation[axis] + delta
-	print("Hand: ",hand," Location:",currentLocation[1], currentLocation[2], currentLocation[3],"\n")
+	--print("Hand: ",hand," Location:",currentLocation[1], currentLocation[2], currentLocation[3],"\n")
 	local location = uevrUtils.vector(currentLocation[1], currentLocation[2], currentLocation[3])
 	local rotation = uevrUtils.rotator(currentRotation[1], currentRotation[2], currentRotation[3])
 	animation.initPoseableComponent((hand == 1) and rightHandComponent or leftHandComponent, (hand == 1) and rightJointName or leftJointName, (hand == 1) and rightShoulderName or leftShoulderName, (hand == 1) and leftShoulderName or rightShoulderName, location, rotation, uevrUtils.vector(currentScale, currentScale, currentScale), rootBoneName)
@@ -242,7 +242,7 @@ function M.SetLocation(hand, Desiredlocation)
 	local currentLocation = Desiredlocation
 	local currentRotation = hand == 1 and currentRightRotation or currentLeftRotation
 	--currentLocation[axis] = currentLocation[axis] + delta
-	print("Hand: ",hand," Location:",currentLocation[1], currentLocation[2], currentLocation[3],"\n")
+	--print("Hand: ",hand," Location:",currentLocation[1], currentLocation[2], currentLocation[3],"\n")
 	local location = uevrUtils.vector(currentLocation[1], currentLocation[2], currentLocation[3])
 	local rotation = uevrUtils.rotator(currentRotation[1], currentRotation[2], currentRotation[3])
 	animation.initPoseableComponent((hand == 1) and rightHandComponent or leftHandComponent, (hand == 1) and rightJointName or leftJointName, (hand == 1) and rightShoulderName or leftShoulderName, (hand == 1) and leftShoulderName or rightShoulderName, location, rotation, uevrUtils.vector(currentScale, currentScale, currentScale), rootBoneName)
@@ -275,7 +275,7 @@ local currentIndex = 1
 		register_key_bind("NumPadFive", function() -- switch the current finger
 			currentFinger = currentFinger + 1
 			if currentFinger > 10 then currentFinger = 1 end
-			print("Current finger joint", currentFinger, currentIndex)
+			--print("Current finger joint", currentFinger, currentIndex)
 		end)
 		register_key_bind("NumPadFour", function()
 			animation.setFingerAngles(leftHandComponent,boneList,currentFinger, currentIndex, 1, -5)
@@ -289,7 +289,7 @@ local currentIndex = 1
 		register_key_bind("NumPadZero", function() --switch to the next bone in the current finger
 			currentIndex = currentIndex + 1
 			if currentIndex > 3 then currentIndex = 1 end
-			print("Current finger joint", currentFinger, currentIndex)
+			--print("Current finger joint", currentFinger, currentIndex)
 		end)
 
 

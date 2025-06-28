@@ -111,7 +111,7 @@ local function init_static_objects()
     
     staic_mesh_component_c = find_required_object("Class /Script/Engine.StaticMeshComponent")
     if not staic_mesh_component_c then 
-	print("false")
+	--print("false")
 	return false end
 
     staic_mesh_c = find_required_object("Class /Script/Engine.StaticMesh")
@@ -200,7 +200,7 @@ local function spawn_actor(world_context, actor_class, location, collision_metho
     end
 
     Statics:FinishSpawningActor(actor, zero_transform)
-    print("Spawned actor")
+    --print("Spawned actor")
 
     return actor
 end
@@ -297,7 +297,7 @@ local function spawn_scope_plane(world, owner, pos, rt)
 end
 
 local function spawn_reticle_plane(world, owner, pos, tex)
-	print(scope_actor)
+	--print(scope_actor)
     local local_reticle_mesh = scope_actor:AddComponentByClass(staic_mesh_component_c, false, zero_transform, false)
 	if local_reticle_mesh == nil then
         print("Failed to spawn local_reticle_mesh")
@@ -443,7 +443,7 @@ local function spawn_scope(game_engine, pawn)
         scene_capture_component = nil
 		reticle_plane_component = nil
         scope_actor = spawn_actor(world, actor_c, temp_vec3:set(0, 0, 0), 1, nil)
-		print("yes")
+		--print("yes")
         if scope_actor == nil then
             print("Failed to spawn scope actor")
             return
@@ -473,7 +473,7 @@ local last_scope_state = false
 
 local function attach_components_to_weapon(weapon_mesh)
     if not weapon_mesh then return end
-	print("Attach new")
+	--print("Attach new")
 	--if not string.find(api:get_local_pawn(0).m_currentEquipment:get_fname():to_string(),"Bino") and not string.find(Get_Scope_Object(api:get_local_pawn(0):GetCurrentArm()):get_fname():to_string(),"Collimator")  then
 	
 		-- Attach scene capture to weapon
@@ -807,7 +807,7 @@ uevr.sdk.callbacks.on_pre_engine_tick(
 					--if reticle_plane_component~=nil then
 					--	reticle_plane_component:SetVisibility(false)
 					--end
-                    print("Level changed .. Reseting")
+                    --print("Level changed .. Reseting")
                     destroy_actor(scope_actor)
 					scope_actor=nil
                     scope_plane_component = nil
@@ -827,7 +827,7 @@ uevr.sdk.callbacks.on_pre_engine_tick(
 					if reticle_plane_component~=nil then
 					reticle_plane_component:SetVisibility(false)
 					end
-					print("Exit Menu.. Reseting")
+					--print("Exit Menu.. Reseting")
 					destroy_actor(scope_actor)
 					scope_actor=nil
                     scope_plane_component = nil
@@ -875,7 +875,7 @@ end)
 
 
 uevr.sdk.callbacks.on_script_reset(function()
-    print("Resetting")
+    --print("Resetting")
     destroy_actor(scope_actor)
     scope_plane_component = nil
     scene_capture_component = nil
