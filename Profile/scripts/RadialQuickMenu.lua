@@ -1,3 +1,6 @@
+-- radial_quick_menu_active is set it ControlInput.lua.
+--   it is true if the quick menu is currently active.
+
 require(".\\Trackers\\Trackers")
 require(".\\Subsystems\\UEHelper")
 require(".\\Subsystems\\ControlInput")
@@ -83,7 +86,7 @@ if not RadialQuickMenu then
 end
 
 --If Quick menu is open and option for RadialQuickMenu is on, then activate slow motion, grab initial position of player's hand to compare to movement while menu open
-if QuickMenu==true and RadialQuickMenu then
+if radial_quick_menu_active==true and RadialQuickMenu then
 	if not QuickMenuJustOpened then
 		QuickMenuJustOpened=true
 		QuickMenuOriginalPosition=right_hand_component:K2_GetComponentLocation()
@@ -93,14 +96,14 @@ if QuickMenu==true and RadialQuickMenu then
 			local CheatManager = playerController.CheatManager
 
 			if CheatManager ~= nil then
-				CheatManager:Slomo(0.1)
+				CheatManager:Slomo(0.25)
 				QuickMenuSloMoActive=true
 			end
 		end
 	end
-	local current_controller_position=right_hand_component:K2_GetComponentLocation()
-    QuickMenuSelectedSlot = CheckQuickSlotPosition(current_controller_position, QuickMenuOriginalTransform, QuickMenuSelectedSlot)
-	QuickMenuSimulatedStickX, QuickMenuSimulatedStickY = SlotToThumbstick(QuickMenuSelectedSlot)
+	--local current_controller_position=right_hand_component:K2_GetComponentLocation()
+    --QuickMenuSelectedSlot = CheckQuickSlotPosition(current_controller_position, QuickMenuOriginalTransform, QuickMenuSelectedSlot)
+	--QuickMenuSimulatedStickX, QuickMenuSimulatedStickY = SlotToThumbstick(QuickMenuSelectedSlot)
 else QuickMenuJustOpened=false
 end
 end)
@@ -108,7 +111,7 @@ end)
 uevr.sdk.callbacks.on_xinput_get_state(function(retval, user_index, state)
 
 --If Quick menu no longer open, return time to normal scale
-if QuickMenu==false and RadialQuickMenu then
+if radial_quick_menu_active==false and RadialQuickMenu then
 	if QuickMenuSloMoActive then
 		QuickMenuSloMoActive=false
 		local playerController = api:get_player_controller(0)
@@ -121,13 +124,15 @@ if QuickMenu==false and RadialQuickMenu then
 	end
 end
 
---if QuickMenu==true and not isBow and uevr.params.vr:get_mod_value("UI_FollowView") then
+--[[
+--if radial_quick_menu_active=true and not isBow and uevr.params.vr:get_mod_value("UI_FollowView") then
 --If not holding the bow and quickmenu is open, use hand motion to simulate right stick input to rotate the selector
-if QuickMenu==true  and RadialQuickMenu then
+if radial_quick_menu_active  and RadialQuickMenu then
 	if state ~= nil then
 		state.Gamepad.sThumbRX = QuickMenuSimulatedStickX
 		state.Gamepad.sThumbRY = QuickMenuSimulatedStickY
 	end
 end
+]]
 
 end)

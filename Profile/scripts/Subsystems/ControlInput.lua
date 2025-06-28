@@ -18,8 +18,8 @@ local api = uevr.api
 		Dpad right -> press..Change view (first or third person)
 
 		y, jump
-		x, stow weapon
-		b, crouch
+		x, crouch
+		b, stow weapon
 		a, activate (like pick things up or open doors)
 
 		left grip, weapon quick menu
@@ -89,7 +89,7 @@ for key, value in pairs(default_uevr_action_controller_map) do
 end
 
 -- this will record if the quick menu is currently active.
-local quick_menu_active = false
+radial_quick_menu_active = false
 
 -- Callback function for intercepting and modifying XInput gamepad states.
 -- This function is called every time the gamepad state is updated.
@@ -105,9 +105,9 @@ uevr.sdk.callbacks.on_xinput_get_state(
         --   (This is an instance of the button the player mapped for the quick menu)
         -- and the button the player mapped for the quick menu is NOT being pressed
         -- This means the user has released the button that opened the quick menu.
-        if quick_menu_active and current_quick_menu_xinput and not isButtonPressed(state, current_quick_menu_xinput) then
+        if radial_quick_menu_active and current_quick_menu_xinput and not isButtonPressed(state, current_quick_menu_xinput) then
             api:get_player_controller():QuickMenuInput_Released()  -- stop the quick menu
-            quick_menu_active = false  -- record that the player is not longer in the quick menu
+            radial_quick_menu_active = false  -- record that the player is not longer in the quick menu
         end
         -- --- End Quick Menu Deactivation Logic ---
 
@@ -160,9 +160,9 @@ uevr.sdk.callbacks.on_xinput_get_state(
                             -- If this is a quick menu request
                             if action_player_wants == "weapon quick menu" then
                                 quick_menu_button_pressed = true
-                                if not quick_menu_active then
+                                if not radial_quick_menu_active then
                                     api:get_player_controller():QuickMenuInput_Pressed()
-                                    quick_menu_active = true
+                                    radial_quick_menu_active = true
                                 end
                                 -- we are done with logic for this single button
                                 -- go to the next button for this same engine tick

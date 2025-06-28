@@ -123,7 +123,7 @@ function(engine, delta)
             end
 
             -- Set player rotation if not in quick menu
-            if not QuickMenu then
+            if not radial_quick_menu_active then
                 player:ClientSetRotation(Vector3f.new(CamPitch - 7, CamYaw + 2, 0), true)
             end
 
