@@ -88,10 +88,28 @@ for key, value in pairs(default_uevr_action_controller_map) do
     uevr_action_to_button_controller_map[value] = key
 end
 
+-- this will record if the quick menu is currently active.
+local quick_menu_active = false
+
 -- Callback function for intercepting and modifying XInput gamepad states.
 -- This function is called every time the gamepad state is updated.
 uevr.sdk.callbacks.on_xinput_get_state(
     function(retval, user_index, state)
+
+        -- --- Quick Menu Deactivation Logic (moved outside the loop and modified) ---
+        -- Find the button name and XInput constant currently mapped to "weapon quick menu" in user config.
+        local current_quick_menu_mapped_button_name = controller_action_options["weapon quick menu"]
+        local current_quick_menu_xinput = controller_map_reference[current_quick_menu_mapped_button_name]
+        -- If the quick menu is open
+        -- and the the script successfully retreived the "current_quick_menu_xinput"
+        --   (This is an instance of the button the player mapped for the quick menu)
+        -- and the button the player mapped for the quick menu is NOT being pressed
+        -- This means the user has released the button that opened the quick menu.
+        if quick_menu_active and current_quick_menu_xinput and not isButtonPressed(state, current_quick_menu_xinput) then
+            api:get_player_controller():QuickMenuInput_Released()  -- stop the quick menu
+            quick_menu_active = false  -- record that the player is not longer in the quick menu
+        end
+        -- --- End Quick Menu Deactivation Logic ---
 
         -- Game is in the game menu
         if isMenu then
@@ -105,6 +123,16 @@ uevr.sdk.callbacks.on_xinput_get_state(
         else -- game is playing, not in a game menu
 
             local buttons_to_press = {}   -- To collect XInput constants of buttons that should be pressed
+            local quick_menu_button_pressed = false
+
+            -- load button remapping from the config table
+            for _, game_action_name in pairs(default_uevr_action_controller_map) do
+                controller_action_options[game_action_name] = config_table[game_action_name]
+            end
+            -- Create a table that maps actions to buttons
+            for key, value in pairs(controller_action_options) do
+                controller_button_to_actions_map[value] = key
+            end
 
             -- Loop through all the buttons we are allowing players to remap
             for pressed_button_name, pressed_xinput_instance in pairs(controller_map_reference) do
@@ -118,27 +146,28 @@ uevr.sdk.callbacks.on_xinput_get_state(
                     -- If there's a default action associated with this button
                     if default_action_for_button then
 
-                        -- load button remapping from the config table
-                        for _, game_action_name in pairs(default_uevr_action_controller_map) do
-                            controller_action_options[game_action_name] = config_table[game_action_name]
-                        end
-                        -- Create a table that maps actions to buttons
-                        for key, value in pairs(controller_action_options) do
-                            controller_button_to_actions_map[value] = key
-                        end
-
                         -- Get the user's chosen button NAME for this default action from CONFIG.lua
                         action_player_wants = controller_button_to_actions_map[pressed_button_name]
                         local user_mapped_button_name_for_action = controller_action_options[action_player_wants]
 
                         -- Check if the user has remapped this action to a *different* button name
                         if default_action_for_button ~= pressed_button_name then
+
                             -- User has remapped it.
                             -- 1. Unpress the physically pressed button
-                            for action_name, button_name in pairs(default_uevr_action_controller_map) do
-                                print ("\t"..action_name..": "..button_name)
-                            end
                             unpressButton(state, pressed_xinput_instance)
+
+                            -- If this is a quick menu request
+                            if action_player_wants == "weapon quick menu" then
+                                quick_menu_button_pressed = true
+                                if not quick_menu_active then
+                                    api:get_player_controller():QuickMenuInput_Pressed()
+                                    quick_menu_active = true
+                                end
+                                -- we are done with logic for this single button
+                                -- go to the next button for this same engine tick
+                                goto next_button_in_loop
+                            end
 
                             -- 2. Determine the XInput constant for the button the user *wants* pressed
                             button_name_player_wants_pressed = uevr_action_to_button_controller_map[action_player_wants]
@@ -148,9 +177,13 @@ uevr.sdk.callbacks.on_xinput_get_state(
                             if target_xinput_instance and user_mapped_button_name_for_action ~= "None" then
                                 table.insert(buttons_to_press, target_xinput_instance)
                             end
+
                         end
                     end
                 end
+                
+                ::next_button_in_loop:: -- Label for `goto`
+
             end
 
             -- Then, apply the presses
