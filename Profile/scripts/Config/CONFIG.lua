@@ -78,6 +78,7 @@ config_table = {
     UI_Follows_View =true,
     DarkerDarks=false,
     RadialQuickMenu=true,
+    RadialQuickMenuSlowSpeedPercent=.25,
     ManageLighting=true,
     --HandIndex=2
     --isRhand = true
@@ -132,6 +133,7 @@ UIFollowsView = config_table.UI_Follows_View
 DarkerDarks=config_table.DarkerDarks
 ManageLighting=config_table.ManageLighting
 RadialQuickMenu=config_table.RadialQuickMenu
+RadialQuickMenuSlowSpeedPercent=config_table.RadialQuickMenuSlowSpeedPercent
 --isRhand = config_table.isRhand -- Commented out, likely not in use or for a feature not fully implemented.
 
 -- Function to check and display UEVR version compatibility in the UI.
@@ -247,6 +249,9 @@ uevr.sdk.callbacks.on_draw_ui(function()
     -- Create options for the 'Script UI' section in the UEVR settings menu.
     UIFollowsView = create_checkbox("UI Follows View", "UI_Follows_View")
     RadialQuickMenu = create_checkbox("Motion Controlled Radial Quick Menu", "RadialQuickMenu")
+    RadialQuickMenuSlowSpeedPercent = create_slider_int("Speed in quick menu",
+                                                        "RadialQuickMenuSlowSpeedPercent",
+                                                        0, 100)
     Enable_Lumen_Indoors = create_checkbox("Enable Lumen Indoors", "Enable_Lumen_Indoors")
     Faster_Projectiles = create_checkbox("Faster Projectiles", "Faster_Projectiles")
     --ReticleAlwaysOn = create_checkbox("Reticle Always On", "Reticle Always On") -- Commented out, likely for a non-functional feature.

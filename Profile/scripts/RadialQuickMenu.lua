@@ -96,7 +96,8 @@ if radial_quick_menu_active==true and RadialQuickMenu then
 			local CheatManager = playerController.CheatManager
 
 			if CheatManager ~= nil then
-				CheatManager:Slomo(0.25)
+				RadialQuickMenuSlowSpeedPercent=config_table.RadialQuickMenuSlowSpeedPercent
+				CheatManager:Slomo( RadialQuickMenuSlowSpeedPercent * .01)
 				QuickMenuSloMoActive=true
 			end
 		end
