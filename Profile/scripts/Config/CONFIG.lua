@@ -77,7 +77,6 @@ config_table = {
     ReticleAlwaysOn =true,
     UI_Follows_View =true,
     DarkerDarks=false,
-    RadialQuickMenu=true,
     RadialQuickMenuSlowSpeedPercent=.25,
     ManageLighting=true,
     --HandIndex=2
@@ -132,7 +131,6 @@ ReticleAlwaysOn = config_table.ReticleAlwaysOn
 UIFollowsView = config_table.UI_Follows_View
 DarkerDarks=config_table.DarkerDarks
 ManageLighting=config_table.ManageLighting
-RadialQuickMenu=config_table.RadialQuickMenu
 RadialQuickMenuSlowSpeedPercent=config_table.RadialQuickMenuSlowSpeedPercent
 --isRhand = config_table.isRhand -- Commented out, likely not in use or for a feature not fully implemented.
 
@@ -158,24 +156,27 @@ end
 
 -- Function to create and display the main header in the UEVR UI.
 local function create_header()
-    imgui.text(title)
-    imgui.text("By: " .. author)
+    imgui.text(title.."  |")
     imgui.same_line()
-    imgui.text("Profile: " .. profile_name)
-   -- imgui.same_line()
-    --imgui.text("Version: " .. profile_version) -- Commented out version display.
-
     -- Include UEVR version check if enabled.
     if check_uevr_version then
         uevr_version_check()
     end
+    imgui.text("By: " .. author)
+    imgui.same_line()
+    imgui.text("Profile: " .. profile_name)
+
+    
     imgui.new_line()
 end
 
 -- Function to create a dropdown UI element for configuration.
-local function create_dropdown(label_name, key_name, values)
+local function create_dropdown(label_name, key_name, values, same_line)
     -- `imgui.combo` returns `changed` (boolean) and `new_value` (selected index).
     local changed, new_value = imgui.combo(label_name, config_table[key_name], values)
+
+    -- Do not make a new line in the UI
+    if same_line then imgui.same_line() end
 
     if changed then
         -- Update the config_table with the new value and save it to the JSON file.
@@ -188,9 +189,12 @@ local function create_dropdown(label_name, key_name, values)
 end
 
 -- Function to create a checkbox UI element for boolean configuration.
-local function create_checkbox(label_name, key_name)
+local function create_checkbox(label_name, key_name, same_line)
     -- `imgui.checkbox` returns `changed` (boolean) and `new_value` (checked state).
     local changed, new_value = imgui.checkbox(label_name, config_table[key_name])
+
+    -- Do not make a new line in the UI
+    if same_line then imgui.same_line() end
 
     if changed then
         -- Update the config_table with the new value and save it to the JSON file.
@@ -203,9 +207,12 @@ local function create_checkbox(label_name, key_name)
 end
 
 -- Function to create an integer slider UI element for numerical configuration.
-local function create_slider_int(label_name, key_name, min, max)
+local function create_slider_int(label_name, key_name, min, max, same_line)
     -- `imgui.slider_int` returns `changed` (boolean) and `new_value` (slider value).
     local changed, new_value = imgui.slider_int(label_name, config_table[key_name], min, max)
+
+    -- Do not make a new line in the UI
+    if same_line then imgui.same_line() end
 
     if changed then
         -- Update the config_table with the new value and save it to the JSON file.
@@ -225,9 +232,9 @@ uevr.sdk.callbacks.on_draw_ui(function()
     end
 
     -- Display the paths of loaded JSON config files (for debugging/info).
-    for _, file in ipairs(json_files) do
-        imgui.text(file)
-    end
+    --for _, file in ipairs(json_files) do
+    --    imgui.text(file)
+    --end
     
     imgui.text("Movement")
     -- Create dropdown for Movement Based On.
@@ -247,32 +254,37 @@ uevr.sdk.callbacks.on_draw_ui(function()
     imgui.text("Features")
     
     -- Create options for the 'Script UI' section in the UEVR settings menu.
-    UIFollowsView = create_checkbox("UI Follows View", "UI_Follows_View")
-    RadialQuickMenu = create_checkbox("Motion Controlled Radial Quick Menu", "RadialQuickMenu")
-    RadialQuickMenuSlowSpeedPercent = create_slider_int("Speed in quick menu",
+    UIFollowsView = create_checkbox("HUD Follows View", "UI_Follows_View", true)
+    Faster_Projectiles = create_checkbox("Faster Projectiles", "Faster_Projectiles")
+
+    RadialQuickMenuSlowSpeedPercent = create_slider_int("Quick menu slow speed %",
                                                         "RadialQuickMenuSlowSpeedPercent",
                                                         0, 100)
+    
+    ManageLighting=create_checkbox("Manage lighting (Requires: Restart)", "ManageLighting", true) 
+    DarkerDarks=create_checkbox("Darker interiors and nights (Requires: Manage lighting)", "DarkerDarks") 
     Enable_Lumen_Indoors = create_checkbox("Enable Lumen Indoors", "Enable_Lumen_Indoors")
-    Faster_Projectiles = create_checkbox("Faster Projectiles", "Faster_Projectiles")
-    --ReticleAlwaysOn = create_checkbox("Reticle Always On", "Reticle Always On") -- Commented out, likely for a non-functional feature.
-    -- VisibleHelmet = create_checkbox("Helmet Visibility", "Visible_Helmet") -- Commented out, already handled above and stated as not working.
-    EnableHolster=create_checkbox("Enable Holster", "EnableHolster")
-    HolsterHapticFeedback = create_checkbox("Holster Haptic Feedback (Required Enable Holster checked)", "Holster_Haptic_Feedback")
-    FirstPersonRiding = create_checkbox("First Person Horse Riding", "First_Person_Riding")
+
+    EnableHolster=create_checkbox("Holster", "EnableHolster", true)
+    HolsterHapticFeedback = create_checkbox("Holster Haptic Feedback (Requires: Holster checked)", "Holster_Haptic_Feedback")
+    
+    FirstPersonRiding = create_checkbox("First Person Horse Riding", "First_Person_Riding", true)
     SwordSidewaysIsBlock = create_checkbox("Hold Sword Sideways To Block", "Sword_Sideways_Is_Block")
-    --isRhand = create_checkbox("Right Hand Mode", "isRhand") -- Commented out, likely for a non-functional feature.
-    DarkerDarks=create_checkbox("Darker interiors and nights (Requires: Manage lighting checked)", "DarkerDarks") 
-    ManageLighting=create_checkbox("Manage lighting (Restart required on uncheck)", "ManageLighting") 
+
     ExtraBlockRange = create_slider_int("Extra Block Range (in cm)", "Extra_Block_Range", 0, 50)
     MeleePower = create_slider_int("Melee Power (swing intensity)", "Melee_Power", 0, 1500)
 
-    imgui.separator() -- Visual separator for the new section
+    imgui.new_line()
     imgui.text("Control Mapping")  -- Show message to UEVR UI
     for game_action_name, _ in pairs(controller_action_options) do  -- Loop through all the controller manageable game actions
         -- Create a UEVR UI drop down box for this controller action, save changes in config table if changes are made.
         create_dropdown(game_action_name, game_action_name, controller_input_options)
     end
-    imgui.separator() -- Visual separator for the new section
+    imgui.new_line()
+
+    --ReticleAlwaysOn = create_checkbox("Reticle Always On", "Reticle Always On") -- Commented out, likely for a non-functional feature.
+    -- VisibleHelmet = create_checkbox("Helmet Visibility", "Visible_Helmet") -- Commented out, already handled above and stated as not working.
+    --isRhand = create_checkbox("Right Hand Mode", "isRhand") -- Commented out, likely for a non-functional feature.
 
 end)
 

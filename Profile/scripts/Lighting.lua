@@ -236,6 +236,12 @@ uevr.sdk.callbacks.on_pre_engine_tick(
 
 		--Skip lighting management if user specified to skip.
 		if not ManageLighting then
+            -- disable DarkerDarks it requires ManageLighting
+            if DarkerDarks then
+                DarkerDarks = false
+                config_table.DarkerDarks = false
+            end
+            -- stop this function, user disabled lighting management.
 			return
 		end
 

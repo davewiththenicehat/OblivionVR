@@ -67,26 +67,9 @@ end
 
 uevr.sdk.callbacks.on_pre_engine_tick(
 function(engine, delta)
---In rare event radial quick menu option is changed midstream, reset state
-if not RadialQuickMenu then
-	QuickMenuJustOpened=false
-	QuickMenuSelectedSlot=0
-	QuickMenuSimulatedStickX=0
-	QuickMenuSimulatedStickY=0
-	if QuickMenuSloMoActive then
-		QuickMenuSloMoActive=false
-		local playerController = api:get_player_controller(0)
-		if playerController ~= nil then
-			local CheatManager = playerController.CheatManager
-			if CheatManager ~= nil then
-				CheatManager:Slomo(1.0)
-			end
-		end
-	end
-end
 
---If Quick menu is open and option for RadialQuickMenu is on, then activate slow motion, grab initial position of player's hand to compare to movement while menu open
-if radial_quick_menu_active==true and RadialQuickMenu then
+--If Quick menu is open activate slow motion, grab initial position of player's hand to compare to movement while menu open
+if radial_quick_menu_active==true then
 	if not QuickMenuJustOpened then
 		QuickMenuJustOpened=true
 		QuickMenuOriginalPosition=right_hand_component:K2_GetComponentLocation()
@@ -112,7 +95,7 @@ end)
 uevr.sdk.callbacks.on_xinput_get_state(function(retval, user_index, state)
 
 --If Quick menu no longer open, return time to normal scale
-if radial_quick_menu_active==false and RadialQuickMenu then
+if radial_quick_menu_active==false then
 	if QuickMenuSloMoActive then
 		QuickMenuSloMoActive=false
 		local playerController = api:get_player_controller(0)
@@ -124,16 +107,5 @@ if radial_quick_menu_active==false and RadialQuickMenu then
 		end
 	end
 end
-
---[[
---if radial_quick_menu_active=true and not isBow and uevr.params.vr:get_mod_value("UI_FollowView") then
---If not holding the bow and quickmenu is open, use hand motion to simulate right stick input to rotate the selector
-if radial_quick_menu_active  and RadialQuickMenu then
-	if state ~= nil then
-		state.Gamepad.sThumbRX = QuickMenuSimulatedStickX
-		state.Gamepad.sThumbRY = QuickMenuSimulatedStickY
-	end
-end
-]]
 
 end)
