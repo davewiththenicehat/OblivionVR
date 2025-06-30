@@ -220,8 +220,8 @@ function UpdateInput(state)
     lThumb = isButtonPressed(state, XINPUT_GAMEPAD_LEFT_THUMB)
     rThumb = isButtonPressed(state, XINPUT_GAMEPAD_RIGHT_THUMB)
     Abutton = isButtonPressed(state, XINPUT_GAMEPAD_A)
-    Bbutton = isButtonPressed(state, XINPUT_GAMEPAD_X) -- Note: B and X are inverted in your setup
-    Xbutton = isButtonPressed(state, XINPUT_GAMEPAD_B) -- Note: B and X are inverted in your setup
+    Bbutton = isButtonPressed(state, XINPUT_GAMEPAD_B)
+    Xbutton = isButtonPressed(state, XINPUT_GAMEPAD_X)
     Ybutton = isButtonPressed(state, XINPUT_GAMEPAD_Y)
 end
 

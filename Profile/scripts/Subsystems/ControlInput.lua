@@ -60,6 +60,7 @@ QuickMenu = false
 
 -- Local variable to track if the B button was not pressed after the menu was exited.
 local BbuttonNotPressedAfterMenu = false
+local MenuExitedUnpressBButton = false
 
 controller_map_reference = {
     ["rShoulder"] = XINPUT_GAMEPAD_RIGHT_SHOULDER,
@@ -131,16 +132,37 @@ uevr.sdk.callbacks.on_xinput_get_state(
         -- Game is in the game menu
         if isMenu then
 
-            -- remap B and X buttons when in the game menu
-            if Bbutton then unpressButton(state, XINPUT_GAMEPAD_B) end
-            if Xbutton then unpressButton(state, XINPUT_GAMEPAD_X) end
-            if Bbutton then pressButton(state, XINPUT_GAMEPAD_X) end
-            if Xbutton then pressButton(state, XINPUT_GAMEPAD_B) end
+            -- First, ensure both XINPUT_GAMEPAD_B and XINPUT_GAMEPAD_X are unpressed in the 'state'
+            -- This gives us a clean slate to apply our desired mapping without native interference.
+            unpressButton(state, XINPUT_GAMEPAD_B)
+            unpressButton(state, XINPUT_GAMEPAD_X)
+
+            -- The X and B buttons are revered in UEVR for Obilvion
+            -- Correct that while in the game menu.
+            if Xbutton then
+                pressButton(state, XINPUT_GAMEPAD_B)
+                -- Resolve issue where B button in pressed when exiting menu
+                -- forcing an unwanted press of the B button.
+                MenuExitedUnpressBButton = true
+            end
+
+            -- The X and B buttons are revered in UEVR for Obilvion
+            -- Correct that while in the game menu.
+            if Bbutton then
+                pressButton(state, XINPUT_GAMEPAD_X)
+            end
+
 
         else -- game is playing, not in a game menu
 
             local buttons_to_press = {}   -- To collect XInput constants of buttons that should be pressed
             local quick_menu_button_pressed = false
+
+            if MenuExitedUnpressBButton then
+                unpressButton(state, XINPUT_GAMEPAD_B)
+                MenuExitedUnpressBButton = false
+            end
+
 
             -- load button remapping from the config table
             for _, game_action_name in pairs(default_uevr_action_controller_map) do
