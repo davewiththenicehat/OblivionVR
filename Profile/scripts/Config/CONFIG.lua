@@ -36,6 +36,7 @@ config_table = {
 	UI_Follows_View =true,
 	DarkerDarks=false,
 	RadialQuickMenu=true,
+	Visible_Body=true
 	--HandIndex=2
 	--isRhand = true	
 }
@@ -77,6 +78,7 @@ ReticleAlwaysOn = config_table.ReticleAlwaysOn
 UIFollowsView = config_table.UI_Follows_View
 DarkerDarks=config_table.DarkerDarks
 RadialQuickMenu=config_table.RadialQuickMenu
+VisibleBody=config_table.Visible_Body
 --isRhand = config_table.isRhand
 
 
@@ -180,7 +182,7 @@ uevr.sdk.callbacks.on_draw_ui(function()
     HapticFeedback = create_checkbox("Holster Haptic Feedback", "Holster_Haptic_Feedback")
     FirstPersonRiding = create_checkbox("First Person Horse Riding", "First_Person_Riding")
     SwordSidewaysIsBlock = create_checkbox("Hold Sword Sideways To Block", "Sword_Sideways_Is_Block")
-  
+	VisibleBody= create_checkbox("VisibleBody", "Visible_Body")
 	--isRhand = create_checkbox("Right Hand Mode", "isRhand")
 	DarkerDarks=create_checkbox("Darker interiors and nights", "DarkerDarks") 
 	ExtraBlockRange = create_slider_int("Extra Block Range (in cm)", "Extra_Block_Range", 0, 50)

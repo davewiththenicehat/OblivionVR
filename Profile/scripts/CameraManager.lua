@@ -33,7 +33,7 @@ local LastState= isBow
 local ConditionChagned=false
 local isMenuEnter=false
 local YawLast=0
-
+local DecoupledYawCurrentRot = 0
 local LeftRightScaleFactor		=0
 local ForwardBackwardScaleFactor=0
 local IsRecentered=false
@@ -49,7 +49,9 @@ if isMenu and isMenuEnter==false then
 	vr:recenter_view()
 	local player =api:get_player_controller(0)
 	player:ClientSetRotation(Vector3f.new(0,YawLast,0),true)
+	DecoupledYawCurrentRot=YawLast
 elseif  not isMenu and isMenuEnter  then
+	DecoupledYawCurrentRot=YawLast
 	isMenuEnter=false
 	if UIFollowsView then 
 	uevr.params.vr.set_mod_value("UI_FollowView", "true")
@@ -107,9 +109,9 @@ if not isRiding then
 			CamYaw=CamAngle.y
 		end
 	----pcall(function()
-	if not QuickMenu then
-		player:ClientSetRotation(Vector3f.new(CamPitch-7,CamYaw+2,0),true)
-	end
+		if not QuickMenu then
+			player:ClientSetRotation(Vector3f.new(CamPitch-7,CamYaw+2,0),true)
+		end
 	--end)
 	
 		
@@ -201,7 +203,7 @@ if LastState == not isBow then
 end
 end)
 
-local DecoupledYawCurrentRot = 0
+
 local RXState=0
 local SnapAngle
  
@@ -276,7 +278,7 @@ if isBow  then
 	-- vr.recenter_view()
 	-- rotation.y=DecoupledYawCurrentRotLast	
 	end
-	--vr.recenter_view()
+	
 else 
 	if ConditionChagned then
 	local player =api:get_player_controller(0)
