@@ -135,6 +135,7 @@ RadialQuickMenuSlowSpeedPercent=config_table.RadialQuickMenuSlowSpeedPercent
 --isRhand = config_table.isRhand -- Commented out, likely not in use or for a feature not fully implemented.
 
 
+
 -- Function to check and display UEVR version compatibility in the UI.
 local function uevr_version_check()
     imgui.text("UEVR Version Check: ")
