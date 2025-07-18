@@ -32,13 +32,14 @@ config_table = {
     First_Person_Riding = true,
     Extra_Block_Range = 0,
     Melee_Power = 700,
-	ReticleAlwaysOn =true,
-	UI_Follows_View =true,
-	DarkerDarks=false,
-	RadialQuickMenu=true,
+    ReticleAlwaysOn =true,
+    UI_Follows_View =true,
+    DarkerDarks=false,
+    RadialQuickMenu=true,
     ManageLighting=true,
-	--HandIndex=2
-	--isRhand = true	
+    Visible_Body=true
+    --HandIndex=2
+    --isRhand = true	
 }
 
 json_files = fs.glob(config_filename)
@@ -79,6 +80,7 @@ UIFollowsView = config_table.UI_Follows_View
 DarkerDarks=config_table.DarkerDarks
 ManageLighting=config_table.ManageLighting
 RadialQuickMenu=config_table.RadialQuickMenu
+VisibleBody=config_table.Visible_Body
 --isRhand = config_table.isRhand
 
 
@@ -183,6 +185,7 @@ uevr.sdk.callbacks.on_draw_ui(function()
     HapticFeedback = create_checkbox("Holster Haptic Feedback", "Holster_Haptic_Feedback")
     FirstPersonRiding = create_checkbox("First Person Horse Riding", "First_Person_Riding")
     SwordSidewaysIsBlock = create_checkbox("Hold Sword Sideways To Block", "Sword_Sideways_Is_Block")
+	  VisibleBody= create_checkbox("VisibleBody", "Visible_Body")
 	--isRhand = create_checkbox("Right Hand Mode", "isRhand")
 	DarkerDarks=create_checkbox("Darker interiors and nights (Requires: Manage lighting checked)", "DarkerDarks") 
     ManageLighting=create_checkbox("Manage lighting (Restart required on uncheck)", "ManageLighting") 

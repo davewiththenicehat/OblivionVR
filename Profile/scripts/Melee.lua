@@ -235,52 +235,60 @@ if not isRiding then
 	local _class ={VWeaponClass}
 	--print(pawn.WeaponsPairingComponent.WeaponActor:GetOverlappingComponents())
 	local _actors = {}
+	local _actors2={}
 	local _ShieldComp ={}
 	---pcall(function()
 	--pawn.WeaponsPairingComponent.WeaponActor.VHitBox:TriggerTrapBegin()
-  if pawn.WeaponsPairingComponent.WeaponActor ~=nil then
-	if pawn.WeaponsPairingComponent.WeaponActor.VHitBox ~=nil  then
-		pawn.WeaponsPairingComponent.WeaponActor.VHitBox:SetCollisionEnabled(1)
-		pawn.WeaponsPairingComponent.WeaponActor.VHitBox:SetCollisionObjectType(22)
-		--print(pawn.Mesh.AnimScriptInstance.bAttackingRequest)
-		if pawn.Mesh.AnimScriptInstance.bAttackingRequest then
-			isAttacking=true
+	if pawn.WeaponsPairingComponent.WeaponActor ~=nil then
+		if pawn.WeaponsPairingComponent.WeaponActor.VHitBox ~=nil  then
+			pawn.WeaponsPairingComponent.WeaponActor.VHitBox:SetCollisionEnabled(1)
+			pawn.WeaponsPairingComponent.WeaponActor.VHitBox:SetCollisionObjectType(22)
+			--print(pawn.Mesh.AnimScriptInstance.bAttackingRequest)
+			if pawn.Mesh.AnimScriptInstance.bAttackingRequest then
+				isAttacking=true
+			end
+			if isAttacking  then
+				--BoxX=
+				--BoxZ=40
+			--	print("yes")
+				--pawn.WeaponsPairingComponent.WeaponActor.VHitBox.RelativeLocation.X=-40
+				--AttackCount=AttackCount+delta
+			else	
+				pawn.WeaponsPairingComponent.WeaponActor.VHitBox.RelativeLocation.X=10+ExtraBlockRange
+				BoxX=10+ExtraBlockRange
+				BoxZ=1
+			end
+			if AttackCount>1 then
+				AttackCount=0
+				isAttacking=false
+			end
+				if pawn.WeaponsPairingComponent.WeaponActor.VHitBox.BoxExtent.Y -BoxYLast==00 then 
+					BoxY = pawn.WeaponsPairingComponent.WeaponActor.VHitBox.BoxExtent.Y -00
+				else BoxY=pawn.WeaponsPairingComponent.WeaponActor.VHitBox.BoxExtent.Y end
+				
+					BoxYLast=BoxY
+				
+	
+				
+				
+				local BoxVector = Vector3f.new( BoxX, BoxY+00,BoxZ)
+				
+				pawn.WeaponsPairingComponent.WeaponActor.VHitBox:SetBoxExtent(BoxVector,true)
+				--pawn.WeaponsPairingComponent.WeaponActor.VHitBox.BoxExtent.X=80 
+			--end
+			--pawn.WeaponsPairingComponent.WeaponActor.VHitBox.BoxExtent.Z=15
+			--pawn.WeaponsPairingComponent.WeaponActor.VHitBox.BoxExtent.Y=50
+			pawn.WeaponsPairingComponent.WeaponActor.VHitBox:GetOverlappingComponents(_actors)
+			--pawn.WeaponsPairingComponent.ShieldActor:GetOverlappingComponents(_ShieldComp)
 		end
-		if isAttacking  then
-			--BoxX=
-			--BoxZ=40
-		--	print("yes")
-			--pawn.WeaponsPairingComponent.WeaponActor.VHitBox.RelativeLocation.X=-40
-			--AttackCount=AttackCount+delta
-		else	
-			pawn.WeaponsPairingComponent.WeaponActor.VHitBox.RelativeLocation.X=10+ExtraBlockRange
-			BoxX=10+ExtraBlockRange
-			BoxZ=1
-		end
-		if AttackCount>1 then
-			AttackCount=0
-			isAttacking=false
-		end
-			if pawn.WeaponsPairingComponent.WeaponActor.VHitBox.BoxExtent.Y -BoxYLast==00 then 
-				BoxY = pawn.WeaponsPairingComponent.WeaponActor.VHitBox.BoxExtent.Y -00
-			else BoxY=pawn.WeaponsPairingComponent.WeaponActor.VHitBox.BoxExtent.Y end
-			
-				BoxYLast=BoxY
-			
-
-			
-			 
-			local BoxVector = Vector3f.new( BoxX, BoxY+00,BoxZ)
-			
-			pawn.WeaponsPairingComponent.WeaponActor.VHitBox:SetBoxExtent(BoxVector,true)
-			--pawn.WeaponsPairingComponent.WeaponActor.VHitBox.BoxExtent.X=80 
-		--end
-		--pawn.WeaponsPairingComponent.WeaponActor.VHitBox.BoxExtent.Z=15
-		--pawn.WeaponsPairingComponent.WeaponActor.VHitBox.BoxExtent.Y=50
-		pawn.WeaponsPairingComponent.WeaponActor.VHitBox:GetOverlappingComponents(_actors)
-		--pawn.WeaponsPairingComponent.ShieldActor:GetOverlappingComponents(_ShieldComp)
+	else
+		pawn.RightHandHitBox_FP:SetCollisionEnabled(1)
+		pawn.RightHandHitBox_FP:SetCollisionObjectType(22)
+		pawn.RightHandHitBox_FP:GetOverlappingComponents(_actors)
+		pawn.LeftHandHitBox_FP:SetCollisionEnabled(1)
+		pawn.LeftHandHitBox_FP:SetCollisionObjectType(22)
+		pawn.LeftHandHitBox_FP:GetOverlappingComponents(_actors2)		
 	end
-  end
 	
 	--print(_actors)
 	--pawn.WeaponsPairingComponent.WeaponActor.VHitBox:SetRenderInMainPass(true)
@@ -333,7 +341,53 @@ if not isRiding then
 				end
 			end	
 	end
+	for i, comp in ipairs(_actors2) do
 	
+	
+		if not string.find(comp:GetOwner():get_fname():to_string(),"Player") then
+			 --print(comp:GetOwner():get_fname():to_string())
+			if comp:GetOwner():GetOwner()~=nil then
+				if not string.find(comp:GetOwner():GetOwner():get_fname():to_string(),"Player") then	
+					if comp:GetOwner().bIsEquipped ==nil then
+						ActorFound=true
+						SendAttack=false
+						if  HitBoxReset and PosDiffSecondaryHand>MeleePower*1.7 then
+							HitBoxReset=false
+							SendAttack=false	
+							uevr.params.vr.trigger_haptic_vibration(0.0, 0.1, 1.0, 5.0, LeftController)
+							pawn:SendMeleeHitOnPairedPawn(comp:GetOwner(),true,2)
+							player:SendToConsole("player.modav Fatigue -30")
+						elseif  HitBoxReset and PosDiffSecondaryHand>MeleePower then
+							HitBoxReset=false
+							SendAttack=false	
+							uevr.params.vr.trigger_haptic_vibration(0.0, 0.1, 1.0, 5, LeftController)								
+							pawn:SendMeleeHitOnPairedPawn(comp:GetOwner(),false,2)
+							player:SendToConsole("player.modav Fatigue -5")
+						end
+						print(comp:GetOwner():get_fname():to_string())
+					end
+					if comp:GetOwner().bIsEquipped ~=nil and not string.find(comp:GetOwner():get_fname():to_string(),"Shield") then
+						print(comp:GetOwner().bIsEquipped)--get_fname():to_string())
+						if comp:GetOwner().bIsEquipped  then
+				--print("Blocked")			
+							--if not isAimMethodSwitched then 
+								isBlock=true
+								--pawn:SendAttack(3,5)
+								--pawn:SendAttackStartedEvent()
+								uevr.params.vr.trigger_haptic_vibration(0.0, 0.1, 1.0, 100.0, LeftController)
+								pawn:SendBlockHit()
+								--pawn:SendMeleeHitOnPairedPawn(comp:GetOwner():GetOwner(),false,1)
+								DeltaBlock=0
+								break
+							--end
+						end
+					end
+				
+				end
+		
+			end
+		end	
+	end
 
 	
 	
@@ -343,7 +397,7 @@ if not isRiding then
 	end
 	
 	--Reset Hitbox:
-	if ActorFound==false and HitBoxDelta> 0.2 then
+	if ActorFound==false and HitBoxDelta> 0.1 then
 		HitBoxReset=true
 		HitBoxDelta=0
 	end
@@ -411,6 +465,8 @@ if not isRiding then
 			PMesh=	pawn.WeaponsPairingComponent.WeaponActor.MainStaticMeshComponent
 			WeaponMesh=pawn.WeaponsPairingComponent.WeaponActor.MainStaticMeshComponent
 		end
+	elseif pawn.WeaponsPairingComponent.WeaponActor==nil then
+		WeaponMesh=pawn.RightHandHitBox_FP
 	end
 	
 	if left_hand_component:K2_GetComponentRotation().y <0 then 
@@ -626,7 +682,7 @@ end
 --if isHit1 or isHit2 or isHit3 or isHit4 or isHit5 and Mouse1==false then
 
 if isWeaponDrawn and isBow==false then
-	if Mouse1==false and AttackDelta>2.2 and ((PosDiffWeaponHand >= MeleePower and isHit5 and HitBoxReset== true) or (SecondaryHandCanPunch and PosDiffSecondaryHand >= MeleePower) or (WeaponHandCanPunch and PosDiffWeaponHand >= MeleePower)) then
+	if Mouse1==false and AttackDelta>2.2 and (PosDiffWeaponHand >= MeleePower and isHit5 and HitBoxReset== true) then
 	
 	AttackDelta=0
 		--uevr.params.vr.set_mod_value("VR_AimMethod", "1")
