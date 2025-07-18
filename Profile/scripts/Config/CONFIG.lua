@@ -27,19 +27,19 @@ config_table = {
     Enable_Lumen_Indoors = false,
     Faster_Projectiles = false,
     Visible_Helmet = true,--(currently not wokring)
+    EnableHolster = true,
     Holster_Haptic_Feedback = true,
     Sword_Sideways_Is_Block = false,
     First_Person_Riding = true,
     Extra_Block_Range = 0,
     Melee_Power = 700,
-    ReticleAlwaysOn =true,
-    UI_Follows_View =true,
-    DarkerDarks=false,
-    RadialQuickMenu=true,
+	ReticleAlwaysOn =true,
+	UI_Follows_View =true,
+	DarkerDarks=false,
+	RadialQuickMenu=true,
     ManageLighting=true,
-    Visible_Body=true
-    --HandIndex=2
-    --isRhand = true	
+	--HandIndex=2
+	--isRhand = true	
 }
 
 json_files = fs.glob(config_filename)
@@ -61,16 +61,17 @@ end
 
 --Assign config variables
 if config_table.Movement == 1 then
-    HeadBasedMovement = true
+    HeadBasedMovementOrientation = true
 else
-    HeadBasedMovement = false
+    HeadBasedMovementOrientation = false
 end
 
 SnapTurn = config_table.Snap_Turn
 Enable_Lumen_Indoors = config_table.Enable_Lumen_Indoors
 Faster_Projectiles = config_table.Faster_Projectiles
 VisibleHelmet = config_table.Visible_Helmet
-HapticFeedback = config_table.Holster_Haptic_Feedback
+EnableHolster = config_table.EnableHolster
+HolsterHapticFeedback = config_table.Holster_Haptic_Feedback
 FirstPersonRiding = config_table.First_Person_Riding
 SwordSidewaysIsBlock = config_table.Sword_Sideways_Is_Block
 ExtraBlockRange = config_table.Extra_Block_Range
@@ -162,12 +163,12 @@ uevr.sdk.callbacks.on_draw_ui(function()
     end
     
     imgui.text("Movement")
-    local movement_values = {"Head", "R Controller"}
+    local movement_values = {"Head", "Right Controller", "Left Controller"}
     local movement = create_dropdown("Movement Based On", "Movement", movement_values)
     if movement == 1 then
-        HeadBasedMovement = true
+        HeadBasedMovementOrientation = true
     else
-        HeadBasedMovement = false
+        HeadBasedMovementOrientation = false
     end
 
     SnapTurn = create_checkbox("Snap Turn", "Snap_Turn")
@@ -181,8 +182,9 @@ uevr.sdk.callbacks.on_draw_ui(function()
     Enable_Lumen_Indoors = create_checkbox("Enable Lumen Indoors", "Enable_Lumen_Indoors")
     Faster_Projectiles = create_checkbox("Faster Projectiles", "Faster_Projectiles")
 	--ReticleAlwaysOn = create_checkbox("Reticle Always On", "Reticle Always On")
-   -- VisibleHelmet = create_checkbox("Helmet Visibility", "Visible_Helmet")
-    HapticFeedback = create_checkbox("Holster Haptic Feedback", "Holster_Haptic_Feedback")
+    -- VisibleHelmet = create_checkbox("Helmet Visibility", "Visible_Helmet")
+    EnableHolster=create_checkbox("Enable Holster", "EnableHolster")
+    HolsterHapticFeedback = create_checkbox("Holster Haptic Feedback (Required Enable Holster checked)", "Holster_Haptic_Feedback")
     FirstPersonRiding = create_checkbox("First Person Horse Riding", "First_Person_Riding")
     SwordSidewaysIsBlock = create_checkbox("Hold Sword Sideways To Block", "Sword_Sideways_Is_Block")
 	  VisibleBody= create_checkbox("VisibleBody", "Visible_Body")
