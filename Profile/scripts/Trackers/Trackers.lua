@@ -298,7 +298,10 @@ local rControllerIndex= 2
 	LeftRotator =kismet_math_library:Conv_VectorToRotator(left_hand_component:GetForwardVector())
 	HmdRotator = hmd_component:K2_GetComponentRotation()
 	--print(Diff_Rotator_LR.y-LeftCompRotation.y)
-	--print(Diff_Rotator_LR.y)
+	--print(hmd_component:K2_GetComponentLocation().x)
+	--print(hmd_component:K2_GetComponentLocation().y)
+	--print(hmd_component:K2_GetComponentLocation().z)
+	--print("  ")
 	end)
 	
 	-- Use Vector3d if this is a UE5 game (double precision)

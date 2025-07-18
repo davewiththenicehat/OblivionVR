@@ -134,6 +134,7 @@ ManageLighting=config_table.ManageLighting
 RadialQuickMenuSlowSpeedPercent=config_table.RadialQuickMenuSlowSpeedPercent
 --isRhand = config_table.isRhand -- Commented out, likely not in use or for a feature not fully implemented.
 
+
 -- Function to check and display UEVR version compatibility in the UI.
 local function uevr_version_check()
     imgui.text("UEVR Version Check: ")
@@ -270,7 +271,6 @@ uevr.sdk.callbacks.on_draw_ui(function()
     
     FirstPersonRiding = create_checkbox("First Person Horse Riding", "First_Person_Riding", true)
     SwordSidewaysIsBlock = create_checkbox("Hold Sword Sideways To Block", "Sword_Sideways_Is_Block")
-
     ExtraBlockRange = create_slider_int("Extra Block Range (in cm)", "Extra_Block_Range", 0, 50)
     MeleePower = create_slider_int("Melee Power (swing intensity)", "Melee_Power", 0, 1500)
 
