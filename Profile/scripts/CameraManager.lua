@@ -138,6 +138,7 @@ function(engine, delta)
             local Alpha1 -- Angle for HandVector
             local Alpha2 -- Angle for HmdVector
 
+
             -- Determine Alpha1 based on HandVector's quadrant
             if HandVector.x >= 0 and HandVector.y >= 0 then
                 Alpha1 = math.pi / 2 - math.asin(HandVector.x / math.sqrt(HandVector.y^2 + HandVector.x^2))
@@ -278,6 +279,7 @@ function(device, view_index, world_to_meters, position, rotation, is_double)
         end
         DecoupledYawCurrentRot = HmdRotator.y - DiffRot -- Update decoupled yaw based on HMD and right controller difference
     end
+
 end)
 
 -- Callback function for post stereo view offset calculation
