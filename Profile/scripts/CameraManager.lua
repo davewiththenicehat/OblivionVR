@@ -123,7 +123,7 @@ function(engine, delta)
             end
 
             -- Set player rotation if not in quick menu
-            if not QuickMenu then
+            if not radial_quick_menu_active then
                 player:ClientSetRotation(Vector3f.new(CamPitch - 7, CamYaw + 2, 0), true)
             end
 
@@ -173,24 +173,22 @@ function(engine, delta)
         end
 
         -- Apply movement input if not sprinting
-        if not isSprinting then
-            LeftRightScaleFactor = ThumbLX / 32767 -- Scale factor for left/right movement based on thumbstick X
-            ForwardBackwardScaleFactor = ThumbLY / 32767 -- Scale factor for forward/backward movement based on thumbstick Y
+        LeftRightScaleFactor = ThumbLX / 32767 -- Scale factor for left/right movement based on thumbstick X
+        ForwardBackwardScaleFactor = ThumbLY / 32767 -- Scale factor for forward/backward movement based on thumbstick Y
 
-            if HeadBasedMovementOrientation then -- If movement is head-based
-                pawn:AddMovementInput(hmd_component:GetForwardVector(), ForwardBackwardScaleFactor, true) -- Add forward/backward movement based on HMD
-                pawn:AddMovementInput(hmd_component:GetRightVector(), LeftRightScaleFactor, true) -- Add left/right movement based on HMD
+        if HeadBasedMovementOrientation then -- If movement is head-based
+            pawn:AddMovementInput(hmd_component:GetForwardVector(), ForwardBackwardScaleFactor, true) -- Add forward/backward movement based on HMD
+            pawn:AddMovementInput(hmd_component:GetRightVector(), LeftRightScaleFactor, true) -- Add left/right movement based on HMD
+            uevr.params.vr.set_mod_value("VR_MovementOrientation", "0") -- Set movement orientation to 0
+        else -- If movement is controller-based
+            if config_table.Movement == 2 then
+                pawn:AddMovementInput(right_hand_component:GetForwardVector(), ForwardBackwardScaleFactor, true) -- Add forward/backward movement based on right hand
+                pawn:AddMovementInput(right_hand_component:GetRightVector(), LeftRightScaleFactor, true) -- Add left/right movement based on right hand
                 uevr.params.vr.set_mod_value("VR_MovementOrientation", "0") -- Set movement orientation to 0
-            else -- If movement is controller-based
-                if config_table.Movement == 2 then
-                    pawn:AddMovementInput(right_hand_component:GetForwardVector(), ForwardBackwardScaleFactor, true) -- Add forward/backward movement based on right hand
-                    pawn:AddMovementInput(right_hand_component:GetRightVector(), LeftRightScaleFactor, true) -- Add left/right movement based on right hand
-                    uevr.params.vr.set_mod_value("VR_MovementOrientation", "0") -- Set movement orientation to 0
-                elseif config_table.Movement == 3 then
-                    pawn:AddMovementInput(left_hand_component:GetForwardVector(), ForwardBackwardScaleFactor, true) -- Add forward/backward movement based on right hand
-                    pawn:AddMovementInput(left_hand_component:GetRightVector(), LeftRightScaleFactor, true) -- Add left/right movement based on right hand
-                    uevr.params.vr.set_mod_value("VR_MovementOrientation", "0") -- Set movement orientation to 0
-                end
+            elseif config_table.Movement == 3 then
+                pawn:AddMovementInput(left_hand_component:GetForwardVector(), ForwardBackwardScaleFactor, true) -- Add forward/backward movement based on right hand
+                pawn:AddMovementInput(left_hand_component:GetRightVector(), LeftRightScaleFactor, true) -- Add left/right movement based on right hand
+                uevr.params.vr.set_mod_value("VR_MovementOrientation", "0") -- Set movement orientation to 0
             end
         end
         IsRecentered = false -- Reset recenter flag
@@ -207,7 +205,7 @@ function(engine, delta)
     if LastState == not isBow then
         LastState = isBow
         ConditionChagned = true
-        print("ConditionChagned") -- Debug print
+        --print("ConditionChagned") -- Debug print
     end
 end)
 

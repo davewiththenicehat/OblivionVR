@@ -34,8 +34,8 @@ HolsterInit = true -- Flag to indicate if HolsterScript has been initialized.
 
 -- Confirm if required modules were loaded.
 if TrackersInit and configInit then
-    print("HolsterScript.lua: Trackers loaded")
-    print("HolsterScript.lua: Config Loaded")
+    --print("HolsterScript.lua: Trackers loaded")
+    --print("HolsterScript.lua: Config Loaded")
 end
 
 -- Seated mode offset for adjusting holster positions if SitMode is enabled in CONFIG.lua.

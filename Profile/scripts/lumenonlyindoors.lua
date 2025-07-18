@@ -25,10 +25,10 @@ function set_cvar_int(cvar, value)
         -- Set the integer value of the found console variable.
         var:set_int(value)
         -- Print a debug message to confirm the action.
-        print(string.format("LumensOnlyIndoors.lua: Set CVar '%s' to %d", cvar, value))
+        --print(string.format("LumensOnlyIndoors.lua: Set CVar '%s' to %d", cvar, value))
     else
         -- Print an error if the CVar could not be found.
-        print(string.format("LumensOnlyIndoors.lua: ERROR: CVar '%s' not found.", cvar))
+        --print(string.format("LumensOnlyIndoors.lua: ERROR: CVar '%s' not found.", cvar))
     end
 end
 
@@ -97,11 +97,11 @@ local function FadeToGameBegin(fn, obj, locals, result)
 
     -- Only proceed if 'Enable_Lumen_Indoors' is set to true in the CONFIG file.
     if not Enable_Lumen_Indoors then
-        print("LumensOnlyIndoors.lua: Lumen indoors disabled by config. Script will not modify Lumen settings.")
+        --print("LumensOnlyIndoors.lua: Lumen indoors disabled by config. Script will not modify Lumen settings.")
         return
     end
 
-    print("LumensOnlyIndoors.lua: Fade to game initiated (Level changed event received).")
+    --print("LumensOnlyIndoors.lua: Fade to game initiated (Level changed event received).")
 
     -- Get the first active GameEngine object instance in the current world.
     local game_engine = UEVR_UObjectHook.get_first_object_by_class(game_engine_class)
@@ -125,12 +125,12 @@ local function FadeToGameBegin(fn, obj, locals, result)
 
     -- Get the full name of the current world (level).
     local WorldName = world:get_full_name()
-    print("LumensOnlyIndoors.lua: Current World: " .. WorldName)
+    --print("LumensOnlyIndoors.lua: Current World: " .. WorldName)
 
     -- Check if the world name contains "World/", which is a common convention
     -- for exterior (open world) maps in Unreal Engine projects.
     if WorldName:find("World/") then
-        print("LumensOnlyIndoors.lua: Detected EXTERIOR world. Disabling Lumen Global Illumination and Reflections.")
+        --print("LumensOnlyIndoors.lua: Detected EXTERIOR world. Disabling Lumen Global Illumination and Reflections.")
         -- Disable Lumen Dynamic Global Illumination
         set_cvar_int("r.DynamicGlobalIlluminationMethod", 0) -- 0: None, 1: Lumen, 2: Screen Space GI
         set_cvar_int("r.Lumen.DiffuseIndirect.Allow", 0)     -- Disables Lumen's diffuse indirect lighting
@@ -146,7 +146,7 @@ local function FadeToGameBegin(fn, obj, locals, result)
         set_cvar_int("r.RayTracing.Enable", 0)
 
     else
-        print("LumensOnlyIndoors.lua: Detected INTERIOR world. Enabling Lumen Global Illumination and Reflections.")
+        --print("LumensOnlyIndoors.lua: Detected INTERIOR world. Enabling Lumen Global Illumination and Reflections.")
         -- Enable Lumen Dynamic Global Illumination
         set_cvar_int("r.DynamicGlobalIlluminationMethod", 1) -- 0: None, 1: Lumen, 2: Screen Space GI
         set_cvar_int("r.Lumen.DiffuseIndirect.Allow", 1)     -- Enables Lumen's diffuse indirect lighting

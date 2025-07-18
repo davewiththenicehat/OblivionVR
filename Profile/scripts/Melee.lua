@@ -153,7 +153,7 @@ local function UpdatePlayerCollision(delta)
 	if Init==false and InitDelta>10 then
 		pawn:Crouch(true)
 		Init=true
-		print("init")
+		--print("init")
 	end
 	
 		if not isRiding and Init==true then
@@ -317,10 +317,10 @@ if not isRiding then
 								pawn:SendMeleeHitOnPairedPawn(comp:GetOwner(),false,2)
 								player:SendToConsole("player.modav Fatigue -5")
 							end
-							print(comp:GetOwner():get_fname():to_string())
+							--print(comp:GetOwner():get_fname():to_string())
 						end
 						if comp:GetOwner().bIsEquipped ~=nil and not string.find(comp:GetOwner():get_fname():to_string(),"Shield") then
-							print(comp:GetOwner().bIsEquipped)--get_fname():to_string())
+							--print(comp:GetOwner().bIsEquipped)--get_fname():to_string())
 							if comp:GetOwner().bIsEquipped  then
 					--print("Blocked")			
 								--if not isAimMethodSwitched then 
@@ -435,9 +435,9 @@ if not isRiding then
 					if comp:GetOwner():GetOwner()~=nil then
 						if not string.find(comp:GetOwner():GetOwner():get_fname():to_string(),"Player") then	
 							
-							print(comp:GetOwner():GetOwner():get_fname():to_string())
+							--print(comp:GetOwner():GetOwner():get_fname():to_string())
 						--	if comp:GetOwner().bIsEquipped ~=nil then
-								print("Shield")--get_fname():to_string())
+								--print("Shield")--get_fname():to_string())
 								--if comp:GetOwner().bIsEquipped then
 						--print("Blocked")			
 									--if not isAimMethodSwitched then 

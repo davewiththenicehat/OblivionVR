@@ -11,7 +11,7 @@ local weaponConnected = false
 local isHoldingWeapon = false
 
 function on_level_change(level)
-	print("Level changed\n")
+	--print("Level changed\n")
 	--controllers.onLevelChange()
 	--controllers.createController(0)
 	--controllers.createController(1)
@@ -75,7 +75,7 @@ function attachWeaponToController()
 		if weapon ~= nil  then
 			local mesh = weapon.SkeletalMeshComponent
 			if mesh ~= nil then
-				print(mesh:get_full_name())
+				--print(mesh:get_full_name())
 				--print(weapon:get_full_name())
 				mesh:DetachFromParent(false,false)
 				mesh:SetVisibility(true, true)
@@ -210,7 +210,7 @@ end
 
 hook_function("Class /Script/Indiana.IndianaPlayerCharacter", "WeaponHolstered", true, 
 	function(fn, obj, locals, result)
-		print("IndianaPlayerCharacter WeaponHolstered")
+		--print("IndianaPlayerCharacter WeaponHolstered")
 		--isHoldingWeapon = false
 		animation.pose("right_hand", "open_right")
 		return false
@@ -219,7 +219,7 @@ hook_function("Class /Script/Indiana.IndianaPlayerCharacter", "WeaponHolstered",
 
 hook_function("Class /Script/Indiana.IndianaPlayerCharacter", "WeaponUnholstered", true, 
 	function(fn, obj, locals, result)
-		print("IndianaPlayerCharacter WeaponUnholstered")
+		--print("IndianaPlayerCharacter WeaponUnholstered")
 		--isHoldingWeapon = true
 		animation.pose("right_hand", "grip_right_weapon")
 		return false

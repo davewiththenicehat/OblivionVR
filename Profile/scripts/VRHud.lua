@@ -38,16 +38,8 @@ local function UpdateHudOnLevelChange()
 	 WidgetComponent=right_hand_actor:AddComponentByClass(WidgetClass,false,zero_transform,false)
 	local ReticleClass= uevr.api:find_uobject("WidgetBlueprintGeneratedClass /Game/UI/Modern/HUD/Reticle/WBP_ModernHud_Reticle.WBP_ModernHud_Reticle_C")	--"WidgetBlueprintGeneratedClass /Game/UI/Modern/HUD/Main/Compass/WBP_ModernHud_CompassIcon.WBP_ModernHud_CompassIcon_C")
 	local ReticleComponent= UEVR_UObjectHook.get_objects_by_class(ReticleClass,false)
-	
-	local ReticleWidget= nil
-	for i, comp in ipairs(ReticleComponent) do
-		if string.find(comp:get_full_name(), "VAltarHud") then
-			print(comp:get_full_name())
-			ReticleWidget=comp
-		end
-	
-	end
-
+	local ReticleWidget= ReticleComponent[2]
+	--print(ReticleWidget:get_full_name())
 	ReticleWidget:RemoveFromViewport()
 	--right_hand_component:SetMaterial(0,hud_material_name)
 	WidgetComponent:SetWidget(ReticleWidget)

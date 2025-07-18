@@ -318,12 +318,12 @@ function register_key_bind(keyName, callbackFunc)
 	keyBindList[keyName] = {}
 	keyBindList[keyName].func = callbackFunc
 	keyBindList[keyName].isPressed = false
-	print("Registered key bind for ", keyName)
+	--print("Registered key bind for ", keyName)
 end
 
 function unregister_key_bind(keyName)
 	keyBindList[keyName] = nil
-	print("Unregistered key bind for ", keyName)
+	--print("Unregistered key bind for ", keyName)
 end
 
 local function updateKeyPress()
@@ -516,9 +516,9 @@ end
 function M.print(str)
 	if isDebugOn then
 		if usingLuaVR then
-			print(str .. "\n")
+			--print(str .. "\n")
 		else
-			print(str)
+			--print(str)
 		end
 	end
 end
@@ -723,7 +723,7 @@ function M.destroy_actor(actor)
 		pcall(function()
 			if actor.K2_DestroyActor ~= nil then
 				actor:K2_DestroyActor()
-				print("Actor destroyed\n")
+				--print("Actor destroyed\n")
 			end
 		end)	
 	end
@@ -985,13 +985,13 @@ end
 
 function M.stopFadeCamera()
 	local camMan = M.find_first_of("Class /Script/Engine.PlayerCameraManager")
-	print("Camera Manager was",camMan:get_full_name(),"\n")
+	--print("Camera Manager was",camMan:get_full_name(),"\n")
 	
 	if uevr ~= nil and camMan ~= nil and UEVR_UObjectHook.exists(camMan) then
 		--(FromAlpha, ToAlpha, Duration, Color, bShouldFadeAudio, bHoldWhenFinished)
 		camMan:StopCameraFade()
 		--camMan:SetManualCameraFade(1, color_from_rgba(0.0, 0.0, 0.0, 0.0), false)
-		print("stopFadeCamera executed\n")
+		--print("stopFadeCamera executed\n")
 	end
 	fadeHardLock = false
 	fadeSoftLock = false
@@ -1003,22 +1003,22 @@ function M.set_2D_mode(state, delay_msec)
 		if state and (string.sub(mode, 1, 5 ) == "false") then
 			if delay_msec == nil then
 				uevr.params.vr.set_mod_value("VR_2DScreenMode", "true")
-				print("2D mode set immediate\n")
+				--print("2D mode set immediate\n")
 			else
 				delay( delay_msec, function()
 					uevr.params.vr.set_mod_value("VR_2DScreenMode", "true")
-					print("2D mode set\n")
+					--print("2D mode set\n")
 				end)
 			end
 		end
 		if (not state) and (string.sub(mode, 1, 4 ) == "true") then
 			if delay_msec == nil then
 				uevr.params.vr.set_mod_value("VR_2DScreenMode", "false")
-				print("3D mode set immediate\n")
+				--print("3D mode set immediate\n")
 			else
 				delay( delay_msec, function()
 					uevr.params.vr.set_mod_value("VR_2DScreenMode", "false") --do not execute in game thread
-					print("3D mode set\n")
+					--print("3D mode set\n")
 				end)
 			end
 		end
@@ -1055,10 +1055,10 @@ function M.copyMaterials(fromComponent, toComponent)
 	if fromComponent ~= nil and toComponent ~= nil then
 		local materials = fromComponent:GetMaterials()
 		if materials ~= nil then
-			M.print("Copying materials. Found " .. #materials .. " materials on fromComponent")
+			--M.print("Copying materials. Found " .. #materials .. " materials on fromComponent")
 			for i = 1 , #materials do
 				toComponent:SetMaterial(i - 1, materials[i])
-				M.print("Material index " .. i .. ": " .. materials[i]:get_full_name())
+				--M.print("Material index " .. i .. ": " .. materials[i]:get_full_name())
 			end
 		end
 	end
@@ -1079,16 +1079,16 @@ end
 
 function M.detachAndDestroyComponent(component, destroyOwner)
 	if component ~= nil then
-		M.print("Detaching " .. component:get_full_name())
+		--M.print("Detaching " .. component:get_full_name())
 		component:DetachFromParent(true,false)
-		M.print("Component detached")
+		--M.print("Component detached")
 		pcall(function()
-			M.print("Getting component owner")
+			--M.print("Getting component owner")
 			local actor = component:GetOwner()
 			if actor ~= nil and actor.K2_DestroyComponent ~= nil then
-				M.print("Got component owner " .. actor:get_full_name())
+				--M.print("Got component owner " .. actor:get_full_name())
 				actor:K2_DestroyComponent(component)
-				M.print("Destroyed component " .. component:get_full_name())
+				--M.print("Destroyed component " .. component:get_full_name())
 				if destroyOwner == nil then destroyOwner = false end
 				if destroyOwner then
 					actor:K2_DestroyActor()
@@ -1099,27 +1099,27 @@ function M.detachAndDestroyComponent(component, destroyOwner)
 end
 
 function M.createPoseableMeshFromSkeletalMesh(skeletalMeshComponent, parent)
-	M.print("Creating PoseableMeshComponent from " .. skeletalMeshComponent:get_full_name())
+	--M.print("Creating PoseableMeshComponent from " .. skeletalMeshComponent:get_full_name())
 	local poseableComponent = nil
 	if skeletalMeshComponent ~= nil then
 		poseableComponent = M.create_component_of_class("Class /Script/Engine.PoseableMeshComponent", false, nil, nil, parent)
 		--poseableComponent:SetCollisionEnabled(0, false)
 		if poseableComponent ~= nil then
-			M.print("Created poseablemeshcomponent" .. poseableComponent:get_full_name())
+			--M.print("Created poseablemeshcomponent" .. poseableComponent:get_full_name())
 			poseableComponent.SkeletalMesh = skeletalMeshComponent.SkeletalMesh		
 			--force initial update
 			poseableComponent:SetLeaderPoseComponent(skeletalMeshComponent, true, false)
 			poseableComponent:SetLeaderPoseComponent(nil, false, false)
-			M.print("Master pose updated")
+			--M.print("Master pose updated")
 			
 			pcall(function()
 				poseableComponent:CopyPoseFromSkeletalComponent(skeletalMeshComponent)	
-				M.print("Pose copied")
+				--M.print("Pose copied")
 			end)	
 		
 			M.copyMaterials(skeletalMeshComponent, poseableComponent)
 		else 
-			M.print("PoseableMeshComponent could not be created")
+			--M.print("PoseableMeshComponent could not be created")
 		end
 	end
 	return poseableComponent

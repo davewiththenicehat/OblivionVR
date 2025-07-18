@@ -182,7 +182,7 @@ local rControllerIndex= 2
 			right_hand_component.Hand = 1
 		end
 	
-		print("Added scene components")
+		--print("Added scene components")
 	
 		-- The HMD is the only one we need to add manually as UObjectHook doesn't support motion controller components as the HMD
 		local hmdstate = UEVR_UObjectHook.get_or_add_motion_controller_state(hmd_component)
@@ -192,7 +192,7 @@ local rControllerIndex= 2
 			hmdstate:set_permanent(true)
 		end
 	
-		print(string.format("%x", left_hand_actor:get_address()) .. " " .. string.format("%x", right_hand_actor:get_address()) .. " " .. string.format("%x", hmd_actor:get_address()))
+		--print(string.format("%x", left_hand_actor:get_address()) .. " " .. string.format("%x", right_hand_actor:get_address()) .. " " .. string.format("%x", hmd_actor:get_address()))
 	end
 	
 	local function reset_hand_actors()
@@ -246,9 +246,9 @@ local rControllerIndex= 2
 	
 	local function on_level_changed(new_level)
 		-- All actors can be assumed to be deleted when the level changes
-		print("Level changed")
+		--print("Level changed")
 		if new_level then
-			print("New level: " .. new_level:get_full_name())
+			--print("New level: " .. new_level:get_full_name())
 		end
 		left_hand_actor = nil
 		right_hand_actor = nil
@@ -350,7 +350,7 @@ local rControllerIndex= 2
 --	end)
 	
 	uevr.sdk.callbacks.on_script_reset(function()
-		print("Resetting")
+		--print("Resetting")
 	
 		reset_hand_actors()
 	end)
