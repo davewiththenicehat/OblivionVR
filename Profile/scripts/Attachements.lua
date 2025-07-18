@@ -1,4 +1,4 @@
---require(".\\Config\\CONFIG")
+require(".\\Config\\CONFIG")
 require(".\\Trackers\\Trackers")
 require(".\\Subsystems\\UEHelper")
 local uevrUtils = require("libs/uevr_utils")
@@ -94,7 +94,9 @@ local function GetHmdYawOffset()
 	if ThumbLY>15000 then
 			Offset=Offset/4
 	end
-	
+	if isBow and RTrigger > 100 then
+		Offset = 50
+	end
 	local YawOffset= Offset/180*math.pi
 	
 	HmdRotatorYLast=HmdRotator.y
@@ -104,6 +106,10 @@ local function GetHmdYawOffset()
 end
 
 local function update_Body_Meshes(Mesh)
+	if not VisibleBody then
+	 UEVR_UObjectHook.remove_motion_controller_state(Mesh)
+	 Mesh:SetVisibility(false,true)
+	return end
 	if Mesh == nil then return end
 	local pawn = api:get_local_pawn(0)
 	if not isRiding then
@@ -145,7 +151,7 @@ local function update_Body_Meshes(Mesh)
 			--Mesh.AttachChildren.["ChildActorComponent Upper Body"].AttachChildren.["SkeletalMeshComponent Root SkeletalMesh"]:SetVisibility(0)
 			
 			UEVR_UObjectHook.get_or_add_motion_controller_state(Mesh):set_hand(2)
-			UEVR_UObjectHook.get_or_add_motion_controller_state(Mesh):set_rotation_offset(Vector3f.new(HmdRotator.x/180*math.pi,102/180*math.pi+GetHmdYawOffset(),HmdRotator.z/180*math.pi))
+			UEVR_UObjectHook.get_or_add_motion_controller_state(Mesh):set_rotation_offset(Vector3f.new(HmdRotator.x/180*math.pi,95/180*math.pi+GetHmdYawOffset(),HmdRotator.z/180*math.pi))
 			UEVR_UObjectHook.get_or_add_motion_controller_state(Mesh):set_location_offset(lossy_offset)
 			if pawn:IsRagdolling() then
 				UEVR_UObjectHook.remove_motion_controller_state(Mesh)

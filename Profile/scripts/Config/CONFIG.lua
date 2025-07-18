@@ -38,6 +38,7 @@ config_table = {
 	DarkerDarks=false,
 	RadialQuickMenu=true,
     ManageLighting=true,
+	Visible_Body=true
 	--HandIndex=2
 	--isRhand = true	
 }
@@ -81,6 +82,7 @@ UIFollowsView = config_table.UI_Follows_View
 DarkerDarks=config_table.DarkerDarks
 ManageLighting=config_table.ManageLighting
 RadialQuickMenu=config_table.RadialQuickMenu
+VisibleBody=config_table.Visible_Body
 --isRhand = config_table.isRhand
 
 
@@ -186,6 +188,7 @@ uevr.sdk.callbacks.on_draw_ui(function()
     HolsterHapticFeedback = create_checkbox("Holster Haptic Feedback (Required Enable Holster checked)", "Holster_Haptic_Feedback")
     FirstPersonRiding = create_checkbox("First Person Horse Riding", "First_Person_Riding")
     SwordSidewaysIsBlock = create_checkbox("Hold Sword Sideways To Block", "Sword_Sideways_Is_Block")
+	VisibleBody= create_checkbox("VisibleBody", "Visible_Body")
 	--isRhand = create_checkbox("Right Hand Mode", "isRhand")
 	DarkerDarks=create_checkbox("Darker interiors and nights (Requires: Manage lighting checked)", "DarkerDarks") 
     ManageLighting=create_checkbox("Manage lighting (Restart required on uncheck)", "ManageLighting") 
